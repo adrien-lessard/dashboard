@@ -1,10 +1,10 @@
-import QtQuick 2.11
-import QtQuick.Window 2.11
-import QtQuick.Controls 2.3
+import QtQuick 2.9
+import QtQuick.Window 2.3
+import QtQuick.Controls 2.2
 import QtQuick.Extras 1.4
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Styles 1.4
-import QtQuick.Dialogs 1.3
+import QtQuick.Dialogs 1.2
 
 Window {
 
@@ -19,7 +19,7 @@ Window {
         errorCodeResponseText.visible = true
         
         if(text != "") {
-			clearErrorCodesButton.visible = true
+            clearErrorCodesButton.visible = true
         }
     }
 
@@ -194,7 +194,8 @@ Window {
                     Column {
                         id: statusColumn
                         width: 500
-                        spacing: 5
+                        spacing: 10
+                        padding: 10
 
                         Text {
                             id: checkCodeTitle
@@ -215,23 +216,11 @@ Window {
                             }
                         }
 
-                        Text {
-                            id: cannotCheckCodes
-                            color: "#c4c4c4"
-							text: qsTr("On board diagnostics are only available when the car is stopped")
-							horizontalAlignment: Text.AlignHCenter
-							font.pixelSize: 24
-							anchors.left: parent.left
-							anchors.right: parent.right
-							wrapMode: Text.WordWrap
-                            visible: speed.text != 0
-                        }
-
                         Column {
                             id: canCheckCodes
-                            width: 500
+                            width: 500 - 2*parent.padding
                             visible: speed.text == 0
-                            spacing: 5
+                            spacing: parent.spacing
                             
                             Button {
                                 id: checkForUpdatesButton
@@ -240,8 +229,8 @@ Window {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 
                                 onClicked: {
-									checkForUpdates()
-								}
+                                    checkForUpdates()
+                                }
                             }
 
                             Button {
@@ -261,7 +250,7 @@ Window {
                                 text: qsTr("Check engine is ON\nError code(s):\n\nC1600")
                                 horizontalAlignment: Text.AlignHCenter
                                 anchors.left: parent.left
-								anchors.right: parent.right
+                                anchors.right: parent.right
                                 font.pixelSize: 12
                                 visible: false
                             }
@@ -269,23 +258,23 @@ Window {
                             Button {
                                 id: clearErrorCodesButton
                                 anchors.horizontalCenter: parent.horizontalCenter
-								text: qsTr("Clear error codes")
-								visible: false
+                                text: qsTr("Clear error codes")
+                                visible: false
 
-								onClicked: {
-									messageDialog.open()
-								}
+                                onClicked: {
+                                    messageDialog.open()
+                                }
                             }
                             
                             MessageDialog {
-								id: messageDialog
-								title: "Confirm error code removal"
-								text: "If you erase the error codes, you will not be able to query them anymore. Confirm removal?"
-								standardButtons: StandardButton.Yes | StandardButton.No
-								onYes: {
-									clearErrorCodes()
-								}
-							}
+                                id: messageDialog
+                                title: "Confirm error code removal"
+                                text: "If you erase the error codes, you will not be able to query them anymore. Confirm removal?"
+                                standardButtons: StandardButton.Yes | StandardButton.No
+                                onYes: {
+                                    clearErrorCodes()
+                                }
+                            }
                         }
                     }
                 }
