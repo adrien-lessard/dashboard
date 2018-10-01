@@ -78,15 +78,16 @@ with open('MusicItems.qml', 'w') as f:
 				songlist = list()
 				playlist = list()
 				for song in os.listdir('/home/pi/Music/' + str(artist) + '/' + str(album)):
-					if str(song).endswith('.wma'):
+					if str(song).endswith('.wma') or str(song).endswith('.wav'):
 
 						# Fix metadata to match our own, make sure we are not leaving blank fields
 						audio = mutagen.File('/home/pi/Music/{Artist}/{Album}/{Song}'.format(	Artist = str(artist),
 																								Album = str(album),
 																								Song = str(song)))
-						audio['Title'] = str(song)[:-4]
-						audio['Author'] = str(artist)
-						audio.save()
+						if audio == audio:
+							audio['Title'] = str(song)[:-4]
+							audio['Author'] = str(artist)
+							audio.save()
 
 						songlist.append(str(song))
 						playlist.append(songTemplate.format(	Artist = str(artist),
