@@ -1,10 +1,11 @@
-import QtQuick 2.11
-import QtQuick.Window 2.11
-import QtQuick.Controls 2.3
+import QtQuick 2.9
+import QtQuick.Window 2.3
+import QtQuick.Controls 2.2
 import QtQuick.Extras 1.4
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Styles 1.4
-import QtQuick.Dialogs 1.3
+import QtQuick.Dialogs 1.2
+import QtMultimedia 5.8
 
 Window {
 
@@ -37,7 +38,7 @@ Window {
     maximumWidth: width
     minimumHeight: height
     minimumWidth: width
-    visibility: Window.FullScreen
+    //visibility: Window.FullScreen
 
     Shortcut {
         sequence: "Escape"
@@ -123,7 +124,7 @@ Window {
             id: tabBar
             x: 0
             y: 0
-            currentIndex: 2
+            currentIndex: 0
             anchors.left: parent.left
             anchors.right: parent.right
 
@@ -157,29 +158,98 @@ Window {
             Item {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
-                Text {
-                    id: musicText
-                    color: "#c4c4c4"
-                    text: qsTr("Not implemented yet :(")
-                    verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: Text.AlignHCenter
+
+                ScrollView {
+                    id: musicScroll
+                    clip: true
                     anchors.fill: parent
-                    font.pixelSize: 12
+
+                    Text {
+                        color: "#c4c4c4"
+                        text: playMusic.metaData.title
+                        horizontalAlignment: Text.AlignHCenter
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                    }
+
+                    Audio {
+                        id: playMusic
+                        volume: volumeSlider.value
+                        playlist: Playlist { }
+                    }
+
+                    Column {
+                        id: musicColumn
+                        width: 500
+                        //spacing: 10
+                        padding: 10
+
+                        Row {
+                            id: row
+                            height: 50
+                            padding: 10
+
+                            Image {
+                                sourceSize.height: 30
+                                sourceSize.width: 30
+                                source: "../img/left.png"
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: { playMusic.playlist.previous(); }
+                                }
+                            }
+                            
+                            Column {
+                                padding:12
+
+                                ProgressBar {
+                                    width: 150
+                                    height: 6
+                                    id: progressBar
+                                    value: playMusic.position / playMusic.duration
+                                    background: Rectangle {
+                                        height: parent.height
+                                        color: "#c4c4c4"
+                                        radius: 3
+                                    }
+
+                                    contentItem: Rectangle {
+                                        width: parent.value * parent.width
+                                        height: parent.height
+                                        radius: 3
+                                        color: "#17a81a"
+                                    }
+                                }
+                            }
+
+                            Image {
+                                sourceSize.height: 30
+                                sourceSize.width: 30
+                                source: "../img/right.png"
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: { playMusic.playlist.next(); }
+                                }
+                            }
+                            
+                            Slider {
+                                id: volumeSlider
+                                height: parent.height
+                                value: 0.5
+                            }
+                            
+                        }
+
+                        MusicItems {
+
+                        }
+                    }
                 }
             }
 
             Item {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
-                Text {
-                    id: gpsText
-                    color: "#c4c4c4"
-                    text: qsTr("Not implemented yet :(")
-                    verticalAlignment: Text.AlignVCenter
-                    horizontalAlignment: Text.AlignHCenter
-                    anchors.fill: parent
-                    font.pixelSize: 12
-                }
             }
 
             Item {

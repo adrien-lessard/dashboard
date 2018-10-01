@@ -1,5 +1,8 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>MusicItems.qml</file>
+        <file>../img/left.png</file>
+        <file>../img/right.png</file>
     </qresource>
 </RCC>

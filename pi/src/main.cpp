@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 	DashboardApplication* app = new DashboardApplication(worker, argc, argv);
 
 	// Hide cursor
-	app->setOverrideCursor(QCursor(Qt::BlankCursor));
+	//app->setOverrideCursor(QCursor(Qt::BlankCursor));
 
 	QQmlApplicationEngine engine;
 	engine.rootContext()->setContextProperty("applicationData", worker);
@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
 	QObject::connect(worker, SIGNAL(clearErrorCodesDone(QVariant)), window, SLOT(clearErrorCodesDone(QVariant)));
 
 	QObject::connect(app, &DashboardApplication::aboutToQuit, app, &DashboardApplication::killWorker);
-	worker->start();
-	worker->setPriority(QThread::TimeCriticalPriority);
+	//worker->start();
+	//worker->setPriority(QThread::TimeCriticalPriority);
 
 	return app->exec();
 }
