@@ -11,7 +11,8 @@ import QtQuick.Dialogs 1.2
 import QtMultimedia 5.8
 
 Column {
-    width: parent.width - 2 * parent.padding'''
+    id: musicColumn
+    width: 500'''
 
 endtext = '''
 }
@@ -26,7 +27,7 @@ templateStr = '''
         Row {{
             height: parent.height
             Image {{
-                source: "file:///home/pi/Music/{Artist}/{Album}/Folder.jpg"
+                source: "{image}"
                 width: parent.height
                 height: parent.height
             }}
@@ -53,18 +54,40 @@ templateStr = '''
 
 songTemplate = '                playMusic.playlist.addItem("file:///home/pi/Music/{Artist}/{Album}/{Song}");'
 
+import mutagen
+
+
 with open('MusicItems.qml', 'w') as f:
 	f.write(starttext)
 
+	artistList = list()
 	for artist in os.listdir('/home/pi/Music'):
+		artistList.append(str(artist))
+	artistList.sort()
+
+	for artist in artistList:
 		for album in os.listdir('/home/pi/Music/' + str(artist)):
 			if not str(album).endswith('.ini') and not str(album).endswith('.dat'):
-				print(album)
+
+				# default image
+				image = '../img/play.svg'
+				imgpath = '/home/pi/Music/{Artist}/{Album}/Folder.jpg'.format(Artist = str(artist), Album = str(album))
+				if os.path.isfile(imgpath):
+					image = 'file://' + imgpath
 
 				songlist = list()
 				playlist = list()
 				for song in os.listdir('/home/pi/Music/' + str(artist) + '/' + str(album)):
 					if str(song).endswith('.wma'):
+
+						# Fix metadata to match our own, make sure we are not leaving blank fields
+						audio = mutagen.File('/home/pi/Music/{Artist}/{Album}/{Song}'.format(	Artist = str(artist),
+																								Album = str(album),
+																								Song = str(song)))
+						audio['Title'] = str(song)[:-4]
+						audio['Author'] = str(artist)
+						audio.save()
+
 						songlist.append(str(song))
 						playlist.append(songTemplate.format(	Artist = str(artist),
 																Album = str(album),
@@ -78,5 +101,6 @@ with open('MusicItems.qml', 'w') as f:
 
 				f.write(templateStr.format(	Artist = str(artist),
 											Album = str(album),
-											items = '\n'.join(sortedPlaylist)))
+											items = '\n'.join(sortedPlaylist),
+											image = image))
 	f.write(endtext)

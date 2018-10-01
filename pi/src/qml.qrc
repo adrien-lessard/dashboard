@@ -4,5 +4,6 @@
         <file>MusicItems.qml</file>
         <file>../img/left.png</file>
         <file>../img/right.png</file>
+        <file>../img/play.svg</file>
     </qresource>
 </RCC>

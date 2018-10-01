@@ -159,91 +159,87 @@ Window {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
 
+                Text {
+                    color: "#c4c4c4"
+                    text: playMusic.metaData.title ? playMusic.metaData.title : ""
+                    horizontalAlignment: Text.AlignHCenter
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    padding: 10
+                }
+
+                Audio {
+                    id: playMusic
+                    volume: volumeSlider.value
+                    playlist: Playlist { }
+                }
+
+                Row {
+                    anchors.top: parent.top
+                    anchors.topMargin: 20
+                    height: 50
+                    padding: 10
+
+                    Image {
+                        sourceSize.height: 30
+                        sourceSize.width: 30
+                        source: "../img/left.png"
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: { playMusic.playlist.previous(); }
+                        }
+                    }
+                    
+                    Column {
+                        padding:12
+
+                        ProgressBar {
+                            width: 150
+                            height: 6
+                            id: progressBar
+                            value: playMusic.position / playMusic.duration
+                            background: Rectangle {
+                                height: parent.height
+                                color: "#c4c4c4"
+                                radius: 3
+                            }
+
+                            contentItem: Rectangle {
+                                width: parent.value * parent.width
+                                height: parent.height
+                                radius: 3
+                                color: "#17a81a"
+                            }
+                        }
+                    }
+
+                    Image {
+                        sourceSize.height: 30
+                        sourceSize.width: 30
+                        source: "../img/right.png"
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: { playMusic.playlist.next(); }
+                        }
+                    }
+                    
+                    Slider {
+                        id: volumeSlider
+                        anchors.top: parent.top
+                        height: parent.height
+                        value: 0.5
+                    }
+                    
+                }
+
                 ScrollView {
                     id: musicScroll
                     clip: true
                     anchors.fill: parent
+                    anchors.topMargin: 70
 
-                    Text {
-                        color: "#c4c4c4"
-                        text: playMusic.metaData.title
-                        horizontalAlignment: Text.AlignHCenter
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                    }
-
-                    Audio {
-                        id: playMusic
-                        volume: volumeSlider.value
-                        playlist: Playlist { }
-                    }
-
-                    Column {
-                        id: musicColumn
-                        width: 500
-                        //spacing: 10
-                        padding: 10
-
-                        Row {
-                            id: row
-                            height: 50
-                            padding: 10
-
-                            Image {
-                                sourceSize.height: 30
-                                sourceSize.width: 30
-                                source: "../img/left.png"
-                                MouseArea {
-                                    anchors.fill: parent
-                                    onClicked: { playMusic.playlist.previous(); }
-                                }
-                            }
-                            
-                            Column {
-                                padding:12
-
-                                ProgressBar {
-                                    width: 150
-                                    height: 6
-                                    id: progressBar
-                                    value: playMusic.position / playMusic.duration
-                                    background: Rectangle {
-                                        height: parent.height
-                                        color: "#c4c4c4"
-                                        radius: 3
-                                    }
-
-                                    contentItem: Rectangle {
-                                        width: parent.value * parent.width
-                                        height: parent.height
-                                        radius: 3
-                                        color: "#17a81a"
-                                    }
-                                }
-                            }
-
-                            Image {
-                                sourceSize.height: 30
-                                sourceSize.width: 30
-                                source: "../img/right.png"
-                                MouseArea {
-                                    anchors.fill: parent
-                                    onClicked: { playMusic.playlist.next(); }
-                                }
-                            }
-                            
-                            Slider {
-                                id: volumeSlider
-                                height: parent.height
-                                value: 0.5
-                            }
-                            
-                        }
-
-                        MusicItems {
-
-                        }
-                    }
+                    MusicItems { }
                 }
             }
 
