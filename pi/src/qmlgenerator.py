@@ -84,7 +84,7 @@ with open('MusicItems.qml', 'w') as f:
 						audio = mutagen.File('/home/pi/Music/{Artist}/{Album}/{Song}'.format(	Artist = str(artist),
 																								Album = str(album),
 																								Song = str(song)))
-						if audio == audio:
+						if audio is not None:
 							audio['Title'] = str(song)[:-4]
 							audio['Author'] = str(artist)
 							audio.save()
