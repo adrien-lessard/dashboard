@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 	DashboardApplication* app = new DashboardApplication(worker, argc, argv);
 
 	// Hide cursor
-	//app->setOverrideCursor(QCursor(Qt::BlankCursor));
+	app->setOverrideCursor(QCursor(Qt::BlankCursor));
 
 	QQmlApplicationEngine engine;
 	engine.rootContext()->setContextProperty("applicationData", worker);
