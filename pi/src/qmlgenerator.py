@@ -1,5 +1,7 @@
 
 import os
+import mutagen
+from PIL import Image
 
 starttext = '''import QtQuick 2.9
 import QtQuick.Window 2.3
@@ -54,9 +56,6 @@ templateStr = '''
 
 songTemplate = '                playMusic.playlist.addItem("file:///home/pi/Music/{Artist}/{Album}/{Song}");'
 
-import mutagen
-
-
 with open('MusicItems.qml', 'w') as f:
 	f.write(starttext)
 
@@ -71,7 +70,21 @@ with open('MusicItems.qml', 'w') as f:
 
 				# default image
 				image = '../img/play.svg'
-				imgpath = '/home/pi/Music/{Artist}/{Album}/Folder.jpg'.format(Artist = str(artist), Album = str(album))
+
+				# Make a smaller image
+				bigimgpath = '/home/pi/Music/{Artist}/{Album}/Folder.jpg'.format(Artist = str(artist), Album = str(album))
+				if os.path.isfile(bigimgpath):
+					outfile = os.path.splitext(bigimgpath)[0] + "_small.png"
+					if bigimgpath != outfile:
+						try:
+							im = Image.open(bigimgpath)
+							size = 75, 75
+							im.thumbnail(size, Image.ANTIALIAS)
+							im.save(outfile, "PNG")
+						except IOError:
+							print('cannot create thumbnail for ' + str(bigimgpath))
+
+				imgpath = '/home/pi/Music/{Artist}/{Album}/Folder_small.png'.format(Artist = str(artist), Album = str(album))
 				if os.path.isfile(imgpath):
 					image = 'file://' + imgpath
 
