@@ -45,7 +45,7 @@ templateStr = '''
 
         MouseArea {{
             anchors.fill: parent
-            onPressed: {{
+            onClicked: {{
                 playMusic.stop();
                 playMusic.playlist.clear();
 {items}
