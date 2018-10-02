@@ -10,6 +10,13 @@ sudo rpi-update
 # Packages to install
 ```console
 sudo apt install at-spi2-core
+sudo apt install alsa-base
+sudo apt install alsa-utils
+sudo apt install pulseaudio
+sudo apt install gstreamer1.0-pulseaudio
+sudo apt install gstreamer1.0-plugins-good
+sudo apt install gstreamer1.0-plugins-bad
+sudo apt install gstreamer1.0-plugins-ugly
 ```
 
 # Raspberry pi GL config
