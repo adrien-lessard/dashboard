@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
 	QObject::connect(worker, SIGNAL(clearErrorCodesDone(QVariant)), window, SLOT(clearErrorCodesDone(QVariant)));
 
 	QObject::connect(app, &DashboardApplication::aboutToQuit, app, &DashboardApplication::killWorker);
-	//worker->start();
-	//worker->setPriority(QThread::TimeCriticalPriority);
+	worker->start();
+	worker->setPriority(QThread::TimeCriticalPriority);
 
 	return app->exec();
 }
