@@ -171,7 +171,7 @@ Window {
 
                 Audio {
                     id: playMusic
-                    volume: volumeSlider.value
+                    volume: volumeControl.text / 100
                     playlist: Playlist { }
                 }
 
@@ -180,6 +180,44 @@ Window {
                     anchors.topMargin: 20
                     height: 50
                     padding: 10
+
+                    Item {
+                        id: pauseIcon
+                        width: 30
+                        height: 30
+                        visible: true
+
+                        Image {
+                            sourceSize.height: 20
+                            sourceSize.width: 20
+                            source: "../img/pause.svg"
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: { playMusic.pause(); playIcon.visible = true; pauseIcon.visible = false; }
+                            }
+                        }
+                    }
+
+                    Item {
+                        id: playIcon
+                        width: 30
+                        height: 30
+                        visible: false
+                    
+                        Image {
+                            sourceSize.height: 20
+                            sourceSize.width: 20
+                            source: "../img/playFull.svg"
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.verticalCenter: parent.verticalCenter
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: { playMusic.play(); playIcon.visible = false; pauseIcon.visible = true; }
+                            }
+                        }
+                    }
 
                     Image {
                         sourceSize.height: 30
@@ -223,12 +261,75 @@ Window {
                             onClicked: { playMusic.playlist.next(); }
                         }
                     }
-                    
-                    Slider {
-                        id: volumeSlider
-                        anchors.top: parent.top
-                        height: parent.height
-                        value: 0.5
+
+                    Item {
+                        width: 50
+                        height: 30
+                    }
+
+                    Timer {
+                        id: volumeControlIncrTimer
+                        interval: 100;
+                        running: false;
+                        repeat: true;
+                        onTriggered: volumeControl.incr()
+                    }
+
+                    Timer {
+                        id: volumeControlDecrTimer
+                        interval: 100;
+                        running: false;
+                        repeat: true;
+                        onTriggered: volumeControl.decr()
+                    }
+
+                    Text {
+                        width: 40
+                        color: "#c4c4c4"
+                        font.pixelSize: 26
+                        text: "-"
+                        horizontalAlignment: Text.AlignHCenter
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: { volumeControl.decr(); }
+                            onPressAndHold: { volumeControlDecrTimer.running = true; }
+                            onReleased: { volumeControlDecrTimer.running = false; }
+                        }
+                    }
+
+                    Text {
+                        id: volumeControl
+                        width: 40
+                        color: "#c4c4c4"
+                        font.pixelSize: 26
+                        text: "10"
+                        horizontalAlignment: Text.AlignHCenter
+
+                        function incr() {
+                            var newVal = Number(volumeControl.text) + 1;
+                            if(newVal <= 100)
+                                volumeControl.text = newVal;
+                        }
+
+                        function decr() {
+                            var newVal = Number(volumeControl.text) - 1;
+                            if(newVal >= 0)
+                                volumeControl.text = newVal;
+                        }
+                    }
+
+                    Text {
+                        width: 40
+                        color: "#c4c4c4"
+                        font.pixelSize: 26
+                        text: "+"
+                        horizontalAlignment: Text.AlignHCenter
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: { volumeControl.incr(); }
+                            onPressAndHold: { volumeControlIncrTimer.running = true; }
+                            onReleased: { volumeControlIncrTimer.running = false; }
+                        }
                     }
                     
                 }
