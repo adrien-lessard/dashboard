@@ -608,6 +608,8 @@ void OBDIIWorker::run()
 		otherPIDIndex %= ARRAY_SIZE(otherPIDs);
 
 		out << rpm << "," << speed << "," << airFlow << "\n";
+
+		emit updateOdo();
 	}
 }
 

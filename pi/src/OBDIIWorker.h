@@ -61,6 +61,7 @@ signals:
 	// Job done flags
 	void checkErrorCodesDone(QVariant text);
 	void clearErrorCodesDone(QVariant text);
+	void updateOdo();
 	
 public slots:
 	void handleCheckErrorCodes();

@@ -366,6 +366,17 @@ Window {
             Item {
                 Layout.fillHeight: true
                 Layout.fillWidth: true
+
+                ScrollView {
+                    id: tripScroll
+                    clip: true
+                    anchors.fill: parent
+                    padding: 10
+
+                    Trip { 
+                        id: tripPage
+                    }
+                }
             }
 
             Item {

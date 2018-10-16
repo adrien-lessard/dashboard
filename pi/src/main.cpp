@@ -26,9 +26,10 @@ int main(int argc, char *argv[])
 
 	// Load UI
 	engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-	
+
 	// Establish connections between UI and backend
 	QObject* topLevel = engine.rootObjects().value(0);
+	QObject* tripPage = topLevel->findChild<QObject*>("TripPage");
 	QQuickWindow* window = qobject_cast<QQuickWindow*>(topLevel);
 	QObject::connect(window, SIGNAL(checkErrorCodes()), worker, SLOT(handleCheckErrorCodes()));
 	QObject::connect(window, SIGNAL(clearErrorCodes()), worker, SLOT(handleClearErrorCodes()));
@@ -36,6 +37,7 @@ int main(int argc, char *argv[])
 	QObject::connect(window, SIGNAL(killApplication()), app, SLOT(handleKillApplication()));
 	QObject::connect(worker, SIGNAL(checkErrorCodesDone(QVariant)), window, SLOT(checkErrorCodesDone(QVariant)));
 	QObject::connect(worker, SIGNAL(clearErrorCodesDone(QVariant)), window, SLOT(clearErrorCodesDone(QVariant)));
+	QObject::connect(worker, SIGNAL(updateOdo()), tripPage, SLOT(updateOdo()));
 
 	QObject::connect(app, &DashboardApplication::aboutToQuit, app, &DashboardApplication::killWorker);
 	worker->start();
