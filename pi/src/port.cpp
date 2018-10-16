@@ -77,6 +77,11 @@ static void set_blocking (int fd, int should_block)
 
 void portInit()
 {
+	#ifndef __arm__
+	srand(time(NULL));
+	return;
+	#endif
+
 	printf("GPIO init\n");
 	if(wiringPiSetupGpio() == -1)
 		printf("Error wiringPiSetupGpio\n");
@@ -113,22 +118,37 @@ void portInit()
 
 void serial_rx_on()
 {
+	#ifndef __arm__
+	return;
+	#endif
+
 	// flush pending buffers
 	tcflush(uartFd, TCIFLUSH);
 }
 
 void serial_rx_off()
 {
-	
+	#ifndef __arm__
+	return;
+	#endif
 }
 
 void serial_tx_off()
 {
+	#ifndef __arm__
+	return;
+	#endif
+
 	pinModeAlt(txPin, 1);
 }
 
 uint8_t serialRead()
 {
+	#ifndef __arm__
+	delayMs(10);
+	return rand();
+	#endif
+
 	uint8_t byte;
 	int ret = read(uartFd, &byte, 1);
 	if(ret < 0)
@@ -143,11 +163,19 @@ uint8_t serialRead()
 
 void serialWrite(uint8_t data)
 {
+	#ifndef __arm__
+	return;
+	#endif
+
 	write(uartFd, &data, sizeof(data));
 }
 
 void serial_on()
 {
+	#ifndef __arm__
+	return;
+	#endif
+	
 	pinModeAlt(txPin, 2);
 	serial_rx_on();
 }

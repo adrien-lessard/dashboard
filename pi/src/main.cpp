@@ -2,6 +2,7 @@
 #include <QQmlContext>
 #include <QQuickWindow>
 #include <QCursor>
+#include <QFontDatabase>
 
 #include "DashboardApplication.h"
 #include "OBDIIWorker.h"
@@ -15,7 +16,15 @@ int main(int argc, char *argv[])
 	app->setOverrideCursor(QCursor(Qt::BlankCursor));
 
 	QQmlApplicationEngine engine;
+
+	// Load worker
 	engine.rootContext()->setContextProperty("applicationData", worker);
+
+	// Load default monospace font
+	const QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+	engine.rootContext()->setContextProperty("fixedFont", fixedFont);
+
+	// Load UI
 	engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 	
 	// Establish connections between UI and backend

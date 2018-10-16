@@ -2,8 +2,7 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>MusicItems.qml</file>
-        <file>../img/left.png</file>
-        <file>../img/right.png</file>
+        <file>AllPIDs.qml</file>
         <file>../img/play.svg</file>
         <file>../img/playFull.svg</file>
         <file>../img/pause.svg</file>

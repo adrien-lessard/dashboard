@@ -1,12 +1,15 @@
 
 #pragma once
 
+#include <inttypes.h>
+#include <string>
+
 enum PID {
 	PID_SUPPORT00,
 	MIL_CODE,
 	FREEZE_DTC,
 	FUEL_STATUS,
-	LOAD_VALUE,
+	ENGINE_LOAD,
 	COOLANT_TEMP,
 	STFT_BANK1,
 	LTFT_BANK1,
@@ -84,75 +87,111 @@ enum PID {
 	N_PIDS
 };
 
-#define A			data[0]
-#define B			data[1]
-#define C			data[2]
-#define D			data[3]
-
 class OBDIIPID
 {
 public:
-	OBDIIPID(uint8_t* data) : data(data) {}
-	virtual double getEU() = 0;
+	OBDIIPID(uint8_t* data) : data(data), A(data[0]), B(data[1]), C(data[2]), D(data[3]) { }
 protected:
 	uint8_t* data;
+	uint8_t A;
+	uint8_t B;
+	uint8_t C;
+	uint8_t D;
 };
 
-class EngineRPM : OBDIIPID
+// PID 0x00
+class Support00 : OBDIIPID
 {
 public:
-	EngineRPM(uint8_t* data) : OBDIIPID(data) {}
-	virtual double getEU(){return (256.f * A + B) / 4;}
+	Support00(uint8_t* data) : OBDIIPID(data) {}
+	uint32_t getEU(){ return (uint32_t)A << 24 | (uint32_t)B << 16 | (uint32_t)C << 8 | (uint32_t)D; }
 };
 
-class VehicleSpeed : OBDIIPID
+// PID 0x01
+typedef Support00				MilCode;
+
+// PID 0x03
+typedef Support00				FuelStatus;
+
+// PID 0x04
+class EngineLoad : OBDIIPID
 {
 public:
-	VehicleSpeed(uint8_t* data) : OBDIIPID(data) {}
-	virtual double getEU(){return A;}
+	EngineLoad(uint8_t* data) : OBDIIPID(data) {}
+	double getEU(){ return 100.f / 255 * A; }
 };
 
+// PID 0x05
 class CoolantTemp : OBDIIPID
 {
 public:
 	CoolantTemp(uint8_t* data) : OBDIIPID(data) {}
-	virtual double getEU(){return A - 40;}
+	double getEU(){ return A - 40; }
 };
 
-class FuelTrim : OBDIIPID
+// PID 0x06
+class ShortTermFuelTrimB1 : OBDIIPID
 {
 public:
-	FuelTrim(uint8_t* data) : OBDIIPID(data) {}
-	virtual double getEU(){return 100.f * A / 128 - 100;}
+	ShortTermFuelTrimB1(uint8_t* data) : OBDIIPID(data) {}
+	double getEU(){ return 100.f * A / 128 - 100; }
 };
 
+// PID 0x07
+typedef ShortTermFuelTrimB1		LongTermFuelTrimB1;
+
+// PID 0x0C
+class EngineRPM : OBDIIPID
+{
+public:
+	EngineRPM(uint8_t* data) : OBDIIPID(data) {}
+	double getEU(){ return (256.f * A + B) / 4; }
+};
+
+// PID 0x0D
+class VehicleSpeed : OBDIIPID
+{
+public:
+	VehicleSpeed(uint8_t* data) : OBDIIPID(data) {}
+	double getEU(){ return A; }
+};
+
+// PID 0x0E
 class TimingAdvance : OBDIIPID
 {
 public:
 	TimingAdvance(uint8_t* data) : OBDIIPID(data) {}
-	virtual double getEU(){return 0.5f * A - 64;}
+	double getEU(){ return 0.5f * A - 64; }
 };
 
-#define IntakeAirTemp CoolantTemp
+// PID 0x0F
+typedef CoolantTemp				IntakeAirTemp;
 
+// PID 0x10
 class AirFlowRate : OBDIIPID
 {
 public:
 	AirFlowRate(uint8_t* data) : OBDIIPID(data) {}
-	virtual double getEU(){return (256.f * A + B) / 100;}
+	double getEU(){ return (256.f * A + B) / 100; }
 };
 
-class ThrottlePosition : OBDIIPID
+// PID 0x11
+typedef EngineLoad				ThrottlePosition;
+
+// PID 0x13
+typedef Support00				OxygenSensorPresent;
+
+// PID 0x14
+class OxygenSensor1 : OBDIIPID
 {
 public:
-	ThrottlePosition(uint8_t* data) : OBDIIPID(data) {}
-	virtual double getEU(){return 100.f / 255 * A;}
+	OxygenSensor1(uint8_t* data) : OBDIIPID(data) {}
+	double getEU(){ return 1.0 / 200 * A; }
+	double getPercent(){ return 100.f * B / 128 - 100; }
 };
 
-class OxySensor : OBDIIPID
-{
-public:
-	OxySensor(uint8_t* data) : OBDIIPID(data) {}
-	virtual double getEU(){return 2.0/65536*(256.f*A+B);}
-	double getVoltage(){return 8.0/65536*(256.f*C+D);}
-};
+// PID 0x15
+typedef OxygenSensor1			OxygenSensor2;
+
+// PID 0x1C
+typedef Support00				OBDStandard;

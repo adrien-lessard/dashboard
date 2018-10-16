@@ -6,6 +6,7 @@ import QtQuick.Layouts 1.3
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 import QtMultimedia 5.8
+import Qt.labs.settings 1.0
 
 Window {
 
@@ -71,7 +72,7 @@ Window {
             id: rpm
             height: 240
             stepSize: 0
-            value: applicationData.rpm
+            value: applicationData.rpm / 1000
             maximumValue: 6
             anchors.right: parent.right
             anchors.left: parent.left
@@ -101,7 +102,7 @@ Window {
             id: cons
             height: 120
             color: "#c4c4c4"
-            text: applicationData.ic.toFixed(2) + " L/100km"
+            text: applicationData.speed == 0.0 ? (applicationData.airFlow * 3600.0 / (17.4 * 730.0)).toFixed(2) + " L/h" : (applicationData.airFlow * 3600.0 * 100.0 / (17.4 * 730.0 * applicationData.speed)).toFixed(2) + " L/100km"
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
             anchors.right: parent.right
@@ -134,8 +135,8 @@ Window {
             }
 
             TabButton {
-                id: gps
-                text: qsTr("GPS")
+                id: trip
+                text: qsTr("Trip")
             }
 
             TabButton {
@@ -183,7 +184,7 @@ Window {
 
                     Item {
                         id: pauseIcon
-                        width: 30
+                        width: 40
                         height: 30
                         visible: true
 
@@ -202,7 +203,7 @@ Window {
 
                     Item {
                         id: playIcon
-                        width: 30
+                        width: 40
                         height: 30
                         visible: false
                     
@@ -219,10 +220,13 @@ Window {
                         }
                     }
 
-                    Image {
-                        sourceSize.height: 30
-                        sourceSize.width: 30
-                        source: "../img/left.png"
+                    Text {
+                        width: 20
+                        color: "#c4c4c4"
+                        font.pixelSize: 26
+                        padding: -2
+                        text: "<"
+                        horizontalAlignment: Text.AlignHCenter
                         MouseArea {
                             anchors.fill: parent
                             onClicked: { playMusic.playlist.previous(); }
@@ -252,10 +256,13 @@ Window {
                         }
                     }
 
-                    Image {
-                        sourceSize.height: 30
-                        sourceSize.width: 30
-                        source: "../img/right.png"
+                    Text {
+                        width: 20
+                        color: "#c4c4c4"
+                        font.pixelSize: 26
+                        padding: -2
+                        text: ">"
+                        horizontalAlignment: Text.AlignHCenter
                         MouseArea {
                             anchors.fill: parent
                             onClicked: { playMusic.playlist.next(); }
@@ -287,6 +294,7 @@ Window {
                         width: 40
                         color: "#c4c4c4"
                         font.pixelSize: 26
+                        padding: -2
                         text: "-"
                         horizontalAlignment: Text.AlignHCenter
                         MouseArea {
@@ -302,19 +310,29 @@ Window {
                         width: 40
                         color: "#c4c4c4"
                         font.pixelSize: 26
-                        text: "10"
+                        padding: -2
+                        text: volumeControlSettings.volume
                         horizontalAlignment: Text.AlignHCenter
+
+                        Settings {
+                            id: volumeControlSettings
+                            property string volume: "10"
+                        }
 
                         function incr() {
                             var newVal = Number(volumeControl.text) + 1;
-                            if(newVal <= 100)
+                            if(newVal <= 100) {
                                 volumeControl.text = newVal;
+                                volumeControlSettings.volume = newVal;
+                            }
                         }
 
                         function decr() {
                             var newVal = Number(volumeControl.text) - 1;
-                            if(newVal >= 0)
+                            if(newVal >= 0) {
                                 volumeControl.text = newVal;
+                                volumeControlSettings.volume = newVal;
+                            }
                         }
                     }
 
@@ -322,6 +340,7 @@ Window {
                         width: 40
                         color: "#c4c4c4"
                         font.pixelSize: 26
+                        padding: -2
                         text: "+"
                         horizontalAlignment: Text.AlignHCenter
                         MouseArea {
@@ -443,6 +462,8 @@ Window {
                                 }
                             }
                         }
+
+                        AllPIDs { }
                     }
                 }
             }

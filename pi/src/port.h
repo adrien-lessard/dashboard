@@ -9,6 +9,10 @@
 
 #include <inttypes.h>
 
+#ifndef ARRAY_SIZE
+#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
+#endif
+
 const int txPin = 14;
 
 void portInit();

@@ -6,6 +6,10 @@
 #include "PID.h"
 #include "port.h"
 
+#include <QFile>
+#include <QFileInfo>
+#include <QTextStream>
+
 /* PID support */
 uint32_t pid01to20_support = 0;
 uint32_t pid21to40_support = 0;
@@ -18,7 +22,7 @@ constexpr size_t PIDResLens[] =
 	[MIL_CODE]			= 4,
 	[FREEZE_DTC]		= 2,
 	[FUEL_STATUS]		= 2,
-	[LOAD_VALUE]		= 1,
+	[ENGINE_LOAD]		= 1,
 	[COOLANT_TEMP]		= 1,
 	[STFT_BANK1]		= 1,
 	[LTFT_BANK1]		= 1,
@@ -254,9 +258,6 @@ void clear_mil_codes(void)
 
 OBDIIWorker::OBDIIWorker()
 {
-	rpm = 6.0;
-	speed = 0;
-	ic = 0.0;
 	mustStop = false;
 	checkErrorCodes = false;
 	clearErrorCodes = false;
@@ -269,6 +270,11 @@ void OBDIIWorker::setup()
 	printf("Dashboard v0.1\n");
 
 	portInit();
+
+	#ifndef __arm__
+	srand(time(NULL));
+	return;
+	#endif
 
 	// Loop until ISO9141 is initiated
 	do
@@ -291,13 +297,293 @@ void OBDIIWorker::setup()
 	check_supported_pids();
 }
 
+#ifdef __arm__
+
+void OBDIIWorker::computeAndEmitPID(PID pid)
+{
+	uint8_t retBuf[maxPIDResLen];
+	get_pid(pid, retBuf);
+
+	switch(pid)
+	{
+		case PID::PID_SUPPORT00:
+		{
+			support00 = Support00(retBuf).getEU();
+			emit Support00Changed();
+			break;
+		}
+		case PID::MIL_CODE:
+		{
+			milCode = MilCode(retBuf).getEU();
+			emit MilCodeChanged();
+			break;
+		}
+		case PID::FUEL_STATUS:
+		{
+			fuelStatus = FuelStatus(retBuf).getEU();
+			emit FuelStatusChanged();
+			break;
+		}
+		case PID::ENGINE_LOAD:
+		{
+			engineLoad = EngineLoad(retBuf).getEU();
+			emit EngineLoadChanged();
+			break;
+		}
+		case PID::COOLANT_TEMP:
+		{
+			coolantTemp = CoolantTemp(retBuf).getEU();
+			emit CoolantTempChanged();
+			break;
+		}
+		case PID::STFT_BANK1:
+		{
+			stftB1 = ShortTermFuelTrimB1(retBuf).getEU();
+			emit StftB1Changed();
+			break;
+		}
+		case PID::STFT_BANK1:
+		{
+			ltftB1 = LongTermFuelTrimB1(retBuf).getEU();
+			emit LtftB1Changed();
+			break;
+		}
+		case PID::ENGINE_RPM:
+		{
+			rpm = EngineRPM(retBuf).getEU();
+			emit RPMChanged();
+			break;
+		}
+		case PID::VEHICLE_SPEED:
+		{
+			speed = VehicleSpeed(retBuf).getEU();
+			emit SpeedChanged();
+			break;
+		}
+		case PID::TIMING_ADV:
+		{
+			timingAdv = TimingAdvance(retBuf).getEU();
+			emit TimingAdvChanged();
+			break;
+		}
+		case PID::INT_AIR_TEMP:
+		{
+			intAirTmp = IntakeAirTemp(retBuf).getEU();
+			emit IntAirTmpChanged();
+			break;
+		}
+		case PID::MAF_AIR_FLOW:
+		{
+			airFlow = AirFlowRate(retBuf).getEU();
+			emit AirFlowChanged();
+			break;
+		}
+		case PID::THROTTLE_POS:
+		{
+			throttle = ThrottlePosition(retBuf).getEU();
+			emit ThrottleChanged();
+			break;
+		}
+		case PID::OXY_SENSORS1:
+		{
+			oxySensors = OxygenSensor1(retBuf).getEU();
+			emit OxySensorsChanged();
+			break;
+		}
+		case PID::B1S1_O2_V:
+		{
+			b1s1 = OxygenSensor1(retBuf).getEU();
+			b1s1p = OxygenSensor1(retBuf).getPercent();
+			emit B1s1Changed();
+			emit B1s1pChanged();
+			break;
+		}
+		case PID::B1S2_O2_V:
+		{
+			b1s2 = OxygenSensor2(retBuf).getEU();
+			b1s2p = OxygenSensor2(retBuf).getPercent();
+			emit B1s2Changed();
+			emit B1s2pChanged();
+			break;
+		}
+		case PID::OBD_STD:
+		{
+			obdStd = OBDStandard(retBuf).getEU();
+			emit ObdStdChanged();
+			break;
+		}
+		default:
+		{
+			printf("Wrong PID: 0x%02X\n", pid);
+			break;
+		}
+	}
+}
+
+#else
+
+void OBDIIWorker::computeAndEmitPID(PID pid)
+{
+	switch(pid)
+	{
+		case PID::PID_SUPPORT00:
+		{
+			support00 = rand();
+			emit Support00Changed();
+			break;
+		}
+		case PID::MIL_CODE:
+		{
+			milCode = rand();
+			emit MilCodeChanged();
+			break;
+		}
+		case PID::FUEL_STATUS:
+		{
+			fuelStatus = rand();
+			emit FuelStatusChanged();
+			break;
+		}
+		case PID::ENGINE_LOAD:
+		{
+			engineLoad = 100.0 / 255 * (rand() % 256);
+			emit EngineLoadChanged();
+			break;
+		}
+		case PID::COOLANT_TEMP:
+		{
+			coolantTemp = rand() % 256 - 40;
+			emit CoolantTempChanged();
+			break;
+		}
+		case PID::STFT_BANK1:
+		{
+			stftB1 = 100.0 / 128 * (rand() % 256) - 100;
+			emit StftB1Changed();
+			break;
+		}
+		case PID::LTFT_BANK1:
+		{
+			ltftB1 = 100.0 / 128 * (rand() % 256) - 100;
+			emit LtftB1Changed();
+			break;
+		}
+		case PID::ENGINE_RPM:
+		{
+			rpm = rand() % 6000;
+			emit RPMChanged();
+			break;
+		}
+		case PID::VEHICLE_SPEED:
+		{
+			speed = rand() % 120;
+			emit SpeedChanged();
+			break;
+		}
+		case PID::TIMING_ADV:
+		{
+			timingAdv = rand() % 128 - 64;
+			emit TimingAdvChanged();
+			break;
+		}
+		case PID::INT_AIR_TEMP:
+		{
+			intAirTmp = rand() % 256 - 40;
+			emit IntAirTmpChanged();
+			break;
+		}
+		case PID::MAF_AIR_FLOW:
+		{
+			airFlow = 0.005 * (rand() % 200);
+			emit AirFlowChanged();
+			break;
+		}
+		case PID::THROTTLE_POS:
+		{
+			throttle = rand() % 100;
+			emit ThrottleChanged();
+			break;
+		}
+		case PID::OXY_SENSORS1:
+		{
+			oxySensors = rand();
+			emit OxySensorsChanged();
+			break;
+		}
+		case PID::B1S1_O2_V:
+		{
+			b1s1 = 0.001 * (rand() % 1275);
+			b1s1p = rand() % 200 - 100;
+			emit B1s1Changed();
+			emit B1s1pChanged();
+			break;
+		}
+		case PID::B1S2_O2_V:
+		{
+			b1s2 = 0.001 * (rand() % 1275);
+			b1s2p = rand() % 200 - 100;
+			emit B1s2Changed();
+			emit B1s2pChanged();
+			break;
+		}
+		case PID::OBD_STD:
+		{
+			obdStd = rand();
+			emit ObdStdChanged();
+			break;
+		}
+		default:
+		{
+			printf("Wrong PID: 0x%02X\n", pid);
+			break;
+		}
+	}
+
+	delayMs(50);
+}
+
+#endif
+
 void OBDIIWorker::run()
 {
 	int i = 0;
-	
+
 	setup();
-	
-	uint8_t retBuf[maxPIDResLen];
+
+	int logFileNb = 1;
+	QString logFileName;
+	while(true)
+	{
+		logFileName = QString().sprintf("/home/pi/logs/%d.log", logFileNb);
+		QFileInfo fileinfo(logFileName);
+		if(!fileinfo.exists())
+			break;
+		logFileNb++;
+	}
+
+	QFile file(logFileName);
+	if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+	{
+		printf("Cannot open log file\n");
+		return;
+	}
+	QTextStream out(&file);
+
+	PID otherPIDs[] = { PID::PID_SUPPORT00,
+						PID::MIL_CODE,
+						PID::FUEL_STATUS,
+						PID::ENGINE_LOAD,
+						PID::COOLANT_TEMP,
+						PID::STFT_BANK1,
+						PID::LTFT_BANK1,
+						PID::TIMING_ADV,
+						PID::INT_AIR_TEMP,
+						PID::THROTTLE_POS,
+						PID::OXY_SENSORS1,
+						PID::B1S1_O2_V,
+						PID::B1S2_O2_V,
+						PID::OBD_STD };
+	int otherPIDIndex = 0;
 	
 	while(!mustStop)
 	{
@@ -313,25 +599,15 @@ void OBDIIWorker::run()
 			emit clearErrorCodesDone("Cleared! Please restart engine");
 		}
 
-		get_pid(PID::ENGINE_RPM, retBuf);
-		EngineRPM engineRPM = EngineRPM(retBuf);
-		rpm = engineRPM.getEU() / 1000;
-	
-		get_pid(PID::VEHICLE_SPEED, retBuf);
-		VehicleSpeed vehicleSpeed = VehicleSpeed(retBuf);
-		speed = vehicleSpeed.getEU();
+		computeAndEmitPID(PID::ENGINE_RPM);
+		computeAndEmitPID(PID::VEHICLE_SPEED);
+		computeAndEmitPID(PID::MAF_AIR_FLOW);
+		computeAndEmitPID(otherPIDs[otherPIDIndex]);
 
-		get_pid(PID::MAF_AIR_FLOW, retBuf);
-		AirFlowRate airFlowRate = AirFlowRate(retBuf);
-		double airFlow = airFlowRate.getEU(); // g of air / s
-		double fuelFlow_g_s = airFlow / 14.7; // g of fuel / s
-		double fuelFlow_L_s = fuelFlow_g_s / 730.0; // L of fuel / s
-		double fuelFlow_L_h = fuelFlow_L_s * 3600.0; // L of fuel / h
-		ic = fuelFlow_L_h * 100.0 / speed; // L per 100km
+		otherPIDIndex++;
+		otherPIDIndex %= ARRAY_SIZE(otherPIDs);
 
-		emit IcChanged();
-		emit RPMChanged();
-		emit SpeedChanged();
+		out << rpm << "," << speed << "," << airFlow << "\n";
 	}
 }
 
