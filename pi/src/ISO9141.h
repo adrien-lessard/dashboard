@@ -20,8 +20,6 @@ public:
 
 private:
 
-	static uint8_t readByte();
-
 	static void writeByte(uint8_t b);
 
 	// inspired by SternOBDII\code\checksum.c

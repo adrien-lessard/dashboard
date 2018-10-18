@@ -7,6 +7,8 @@
 #include <stropts.h>
 #include <string.h>
 
+#include <wiringPi.h>
+
 #define termios asmtermios
 #include <asm/termios.h>
 #undef  termios
@@ -15,8 +17,19 @@
 #include <QThread>
 #include <asm/termios.h>
 
+const int txPin = 14;
 const int serialTimeout = 500; // ms
 int uartFd = -1;
+
+void txPinHigh()
+{
+	digitalWrite(txPin, HIGH);
+}
+
+void txPinLow()
+{
+	digitalWrite(txPin, LOW);
+}
 
 static int set_interface_attribs (int fd, int speed, int parity)
 {
@@ -77,11 +90,6 @@ static void set_blocking (int fd, int should_block)
 
 void portInit()
 {
-	#ifndef __arm__
-	srand(time(NULL));
-	return;
-	#endif
-
 	printf("GPIO init\n");
 	if(wiringPiSetupGpio() == -1)
 		printf("Error wiringPiSetupGpio\n");
@@ -118,39 +126,35 @@ void portInit()
 
 void serial_rx_on()
 {
-	#ifndef __arm__
-	return;
-	#endif
-
 	// flush pending buffers
 	tcflush(uartFd, TCIFLUSH);
 }
 
 void serial_rx_off()
 {
-	#ifndef __arm__
-	return;
-	#endif
+	
 }
 
 void serial_tx_off()
 {
-	#ifndef __arm__
-	return;
-	#endif
-
 	pinModeAlt(txPin, 1);
+}
+
+uint8_t serialRead0x55()
+{
+	return serialRead();
+}
+
+uint8_t serialRead0xCC()
+{
+	return serialRead();
 }
 
 uint8_t serialRead()
 {
-	#ifndef __arm__
-	delayMs(10);
-	return rand();
-	#endif
-
 	uint8_t byte;
 	int ret = read(uartFd, &byte, 1);
+	
 	if(ret < 0)
 		printf("error %d reading serial: %s\n", errno, strerror(errno));
 	else if(ret == 0)
@@ -163,19 +167,11 @@ uint8_t serialRead()
 
 void serialWrite(uint8_t data)
 {
-	#ifndef __arm__
-	return;
-	#endif
-
 	write(uartFd, &data, sizeof(data));
 }
 
 void serial_on()
 {
-	#ifndef __arm__
-	return;
-	#endif
-	
 	pinModeAlt(txPin, 2);
 	serial_rx_on();
 }

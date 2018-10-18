@@ -20,17 +20,6 @@
 	#define AFTER_WRITE_DELAY_MS	10
 #endif
 
-uint8_t ISO9141::readByte()
-{
-	int b;
-	uint8_t t = 0;
-	while (t != 125 && (b = serialRead()) == -1)
-		t++;
-	if (t >= 125)
-		b = 0;
-	return b;
-}
-
 void ISO9141::writeByte(uint8_t b)
 {
 	serial_rx_off();
@@ -92,7 +81,7 @@ int ISO9141::read(uint8_t *data, uint8_t len)
 	// checksum 1 bytes: [sum(header)+sum(data)]
 
 	for (i = 0; i < 3 + 1 + 1 + 1 + len; i++)
-		buf[i] = readByte();
+		buf[i] = serialRead();
 
 	// test, skip header comparison
 	// ignore failure for the moment (0x7f)
@@ -117,26 +106,26 @@ int ISO9141::init()
 	
 	
 	// drive K line high for 300ms
-	digitalWrite(txPin, HIGH);
+	txPinHigh();
 	delayMs(300);
 
 	// send 0x33 at 5 bauds
 	// start bit
 	printf("Bit-banging 0x33...\n");
-	digitalWrite(txPin, LOW);
+	txPinLow();
 	delayMs(200);
 	// data
 	b = 0x33;
 	for (uint8_t mask = 0x01; mask; mask <<= 1)
 	{
 		if (b & mask) // choose bit
-			digitalWrite(txPin, HIGH); // send 1
+			txPinHigh();
 		else
-			digitalWrite(txPin, LOW); // send 0
+			txPinLow();
 		delayMs(200);
 	}
 	// stop bit + 60 ms delay
-	digitalWrite(txPin, HIGH);
+	txPinHigh();
 	delayMs(260);
 
 	// switch now to 10400 bauds
@@ -148,7 +137,7 @@ int ISO9141::init()
 	for (int i = 0; i < 3; i++)
 	{
 		printf("Reading response from ECU...\n");
-		b = readByte();
+		b = serialRead0x55();
 		if (b != 0)
 			break;
 	}
@@ -159,10 +148,10 @@ int ISO9141::init()
 	}
 
 	// wait for kw1 and kw2
-	kw1 = readByte();
+	kw1 = serialRead();
 	printf("kw1: 0x%02X\n", kw1);
 
-	kw2 = readByte();
+	kw2 = serialRead();
 	printf("kw2: 0x%02X\n", kw2);
 	delayMs(25); // TODO: nécessaire?
 
@@ -170,7 +159,7 @@ int ISO9141::init()
 	writeByte(~kw2);
 	
 	// ECU answer by 0xCC (~0x33)
-	b = readByte();
+	b = serialRead0xCC();
 	if (b != 0xCC) {
 		printf("Did not get 0xCC from ECU, got 0x%02X instead\n", b);
 		return -1;

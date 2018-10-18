@@ -7,6 +7,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fstrict-aliasing -pedanti
 
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+include_directories(src)
+include_directories(portpc)
+include_directories(portpi)
 
 # Instruct CMake to run moc automatically when needed
 set(CMAKE_AUTOMOC ON)
@@ -21,23 +24,25 @@ qt5_add_resources(QT_RESOURCES src/qml.qrc)
 
 # Tell CMake to create the executable
 if(NOT DEFINED HEADERS)
-    file(GLOB HEADERS src⁄*.h)
+    file(GLOB HEADERS src/*.h)
 endif()
 if(NOT DEFINED SOURCES)
     file(GLOB SOURCES src/*.cpp)
 endif()
 
 if(OFF_PLATFORM_TEST_BUILD)
-	set(ADDITIONAL_SOURCES src/fakeWiringPi.cpp)
+	file(GLOB ADDITIONAL_HEADERS portpc/*.h)
+	file(GLOB ADDITIONAL_SOURCES portpc/*.cpp)
 	set(ADDITIONAL_LIBS "")
 else()
-	set(ADDITIONAL_SOURCES "")
+	file(GLOB ADDITIONAL_HEADERS portpi/*.h)
+	file(GLOB ADDITIONAL_SOURCES portpi/*.cpp)
 	set(ADDITIONAL_LIBS wiringPi)
 endif()
 
 source_group("Header Files" FILES ${HEADERS})
 source_group("Source Files" FILES ${SOURCES})
-add_executable(${PROJECT} ${HEADERS} ${SOURCES} ${QT_RESOURCES} ${ADDITIONAL_SOURCES})
+add_executable(${PROJECT} ${HEADERS} ${SOURCES} ${QT_RESOURCES} ${ADDITIONAL_HEADERS} ${ADDITIONAL_SOURCES})
 
 # Compile in C++14
 set_property(TARGET ${PROJECT} PROPERTY CXX_STANDARD 14)

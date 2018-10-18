@@ -3,6 +3,7 @@
 
 #include <QThread>
 #include <QVariant>
+#include <QFile>
 #include "PID.h"
 #include <inttypes.h>
 
@@ -94,7 +95,20 @@ private:
 	bool checkErrorCodes;
 	bool clearErrorCodes;
 
-private:
+	// Internal resources
+	QFile* logFile;
+
+	// PID support
+	uint32_t pid01to20_support = 0;
+	uint32_t pid21to40_support = 0;
+	uint32_t pid41to60_support = 0;
+
+	// Internal functions
 	void setup();
 	void computeAndEmitPID(PID pid);
+	void checkSupportedPids();
+	bool isPidSupported(PID pid);
+	bool getPid(PID pid, uint8_t* retbuf);
+	QString checkMILCodes();
+	void clearMILCodes();
 };

@@ -10,10 +10,6 @@
 #include <QFileInfo>
 #include <QTextStream>
 
-/* PID support */
-uint32_t pid01to20_support = 0;
-uint32_t pid21to40_support = 0;
-uint32_t pid41to60_support = 0;
 
 /* PID query result length */
 constexpr size_t PIDResLens[] =
@@ -101,10 +97,16 @@ constexpr size_t PIDResLens[] =
 
 constexpr size_t maxPIDResLen = *std::max_element(std::begin(PIDResLens), std::end(PIDResLens));
 
+OBDIIWorker::OBDIIWorker()
+{
+	mustStop = false;
+	checkErrorCodes = false;
+	clearErrorCodes = false;
+}
 
 // return 0 if pid is not supported, 1 if it is.
-// mode is 0 for get_pid() and 1 for menu config to allow pid > 0xF0
-bool is_pid_supported(PID pid)
+// mode is 0 for getPid() and 1 for menu config to allow pid > 0xF0
+bool OBDIIWorker::isPidSupported(PID pid)
 {
 	// note that pid PID_SUPPORT00 (0x00) is always supported
 	if ((pid > 0x00 && pid <= 0x20
@@ -123,12 +125,12 @@ bool is_pid_supported(PID pid)
 
 // get value of a PID, return as a long value
 // and also formatted for string output in the return buffer
-bool get_pid(PID pid, uint8_t* retbuf)
+bool OBDIIWorker::getPid(PID pid, uint8_t* retbuf)
 {
 	uint8_t cmd[2];
 
 	// check if PID is supported (should not happen except for some 0xFn)
-	if(!is_pid_supported(pid))
+	if(!isPidSupported(pid))
 	{
 		printf("PID %u not supported\n", pid);
 		return false;
@@ -146,22 +148,22 @@ bool get_pid(PID pid, uint8_t* retbuf)
 	return true;
 }
 
-void check_supported_pids(void)
+void OBDIIWorker::checkSupportedPids()
 {
-	get_pid(PID_SUPPORT00, (uint8_t*)&pid01to20_support);
+	getPid(PID_SUPPORT00, (uint8_t*)&pid01to20_support);
 	pid01to20_support = __builtin_bswap32(pid01to20_support);
 
-	if (is_pid_supported(PID_SUPPORT20))
-		get_pid(PID_SUPPORT20, (uint8_t*)&pid21to40_support);
+	if (isPidSupported(PID_SUPPORT20))
+		getPid(PID_SUPPORT20, (uint8_t*)&pid21to40_support);
 	pid21to40_support = __builtin_bswap32(pid21to40_support);
 
-	if (is_pid_supported(PID_SUPPORT40))
-		get_pid(PID_SUPPORT40, (uint8_t*)&pid41to60_support);
+	if (isPidSupported(PID_SUPPORT40))
+		getPid(PID_SUPPORT40, (uint8_t*)&pid41to60_support);
 	pid41to60_support = __builtin_bswap32(pid41to60_support);
 }
 
 // might be incomplete
-QString check_mil_codes(void)
+QString OBDIIWorker::checkMILCodes()
 {
 	uint8_t PIDRes[maxPIDResLen];
 	char str[16];
@@ -169,7 +171,7 @@ QString check_mil_codes(void)
 	uint8_t buf[6];
 	QString retText = QString("");
 
-	get_pid(MIL_CODE, PIDRes);
+	getPid(MIL_CODE, PIDRes);
 
 	uint8_t byteA = PIDRes[0];
 
@@ -244,7 +246,7 @@ QString check_mil_codes(void)
 	return retText;
 }
 
-void clear_mil_codes(void)
+void OBDIIWorker::clearMILCodes()
 {
 	uint8_t cmd[1];
 
@@ -256,27 +258,37 @@ void clear_mil_codes(void)
 	printf("Cleared codes. Restart engine.\n");
 }
 
-OBDIIWorker::OBDIIWorker()
-{
-	mustStop = false;
-	checkErrorCodes = false;
-	clearErrorCodes = false;
-}
-
 void OBDIIWorker::setup()
 {
-	uint8_t r;
-
 	printf("Dashboard v0.1\n");
+
+	srand(time(NULL));
 
 	portInit();
 
-	#ifndef __arm__
-	srand(time(NULL));
-	return;
-	#endif
+	// Initialize the log file
+	// Find an unused name
+	int logFileNb = 1;
+	QString logFileName;
+	while(true)
+	{
+		logFileName = QString().sprintf("/home/pi/logs/%d.log", logFileNb);
+		QFileInfo fileinfo(logFileName);
+		if(!fileinfo.exists())
+			break;
+		logFileNb++;
+	}
+
+	// Create the log file
+	logFile = new QFile(logFileName);
+	if (!logFile->open(QIODevice::WriteOnly | QIODevice::Text))
+	{
+		printf("Cannot open log file\n");
+		return;
+	}
 
 	// Loop until ISO9141 is initiated
+	int initResult;
 	do
 	{
 		// To let this die properly
@@ -284,25 +296,23 @@ void OBDIIWorker::setup()
 			return;
 		
 		printf("ISO9141 init...\n");
-		r = ISO9141::init();
-		if (r == 0)
+		initResult = ISO9141::init();
+		if (initResult == 0)
 			printf("ISO9141 init success!\n");
 		else
 			printf("ISO9141 init failure!\n");
 
 		delayMs(1000);
-	} while (r != 0);
+	} while (initResult != 0);
 
 	// check supported PIDs
-	check_supported_pids();
+	OBDIIWorker::checkSupportedPids();
 }
-
-#ifdef __arm__
 
 void OBDIIWorker::computeAndEmitPID(PID pid)
 {
 	uint8_t retBuf[maxPIDResLen];
-	get_pid(pid, retBuf);
+	getPid(pid, retBuf);
 
 	switch(pid)
 	{
@@ -342,7 +352,7 @@ void OBDIIWorker::computeAndEmitPID(PID pid)
 			emit StftB1Changed();
 			break;
 		}
-		case PID::STFT_BANK1:
+		case PID::LTFT_BANK1:
 		{
 			ltftB1 = LongTermFuelTrimB1(retBuf).getEU();
 			emit LtftB1Changed();
@@ -420,195 +430,57 @@ void OBDIIWorker::computeAndEmitPID(PID pid)
 	}
 }
 
-#else
-
-void OBDIIWorker::computeAndEmitPID(PID pid)
-{
-	switch(pid)
-	{
-		case PID::PID_SUPPORT00:
-		{
-			support00 = rand();
-			emit Support00Changed();
-			break;
-		}
-		case PID::MIL_CODE:
-		{
-			milCode = rand();
-			emit MilCodeChanged();
-			break;
-		}
-		case PID::FUEL_STATUS:
-		{
-			fuelStatus = rand();
-			emit FuelStatusChanged();
-			break;
-		}
-		case PID::ENGINE_LOAD:
-		{
-			engineLoad = 100.0 / 255 * (rand() % 256);
-			emit EngineLoadChanged();
-			break;
-		}
-		case PID::COOLANT_TEMP:
-		{
-			coolantTemp = rand() % 256 - 40;
-			emit CoolantTempChanged();
-			break;
-		}
-		case PID::STFT_BANK1:
-		{
-			stftB1 = 100.0 / 128 * (rand() % 256) - 100;
-			emit StftB1Changed();
-			break;
-		}
-		case PID::LTFT_BANK1:
-		{
-			ltftB1 = 100.0 / 128 * (rand() % 256) - 100;
-			emit LtftB1Changed();
-			break;
-		}
-		case PID::ENGINE_RPM:
-		{
-			rpm = rand() % 6000;
-			emit RPMChanged();
-			break;
-		}
-		case PID::VEHICLE_SPEED:
-		{
-			speed = rand() % 120;
-			emit SpeedChanged();
-			break;
-		}
-		case PID::TIMING_ADV:
-		{
-			timingAdv = rand() % 128 - 64;
-			emit TimingAdvChanged();
-			break;
-		}
-		case PID::INT_AIR_TEMP:
-		{
-			intAirTmp = rand() % 256 - 40;
-			emit IntAirTmpChanged();
-			break;
-		}
-		case PID::MAF_AIR_FLOW:
-		{
-			airFlow = 0.005 * (rand() % 200);
-			emit AirFlowChanged();
-			break;
-		}
-		case PID::THROTTLE_POS:
-		{
-			throttle = rand() % 100;
-			emit ThrottleChanged();
-			break;
-		}
-		case PID::OXY_SENSORS1:
-		{
-			oxySensors = rand();
-			emit OxySensorsChanged();
-			break;
-		}
-		case PID::B1S1_O2_V:
-		{
-			b1s1 = 0.001 * (rand() % 1275);
-			b1s1p = rand() % 200 - 100;
-			emit B1s1Changed();
-			emit B1s1pChanged();
-			break;
-		}
-		case PID::B1S2_O2_V:
-		{
-			b1s2 = 0.001 * (rand() % 1275);
-			b1s2p = rand() % 200 - 100;
-			emit B1s2Changed();
-			emit B1s2pChanged();
-			break;
-		}
-		case PID::OBD_STD:
-		{
-			obdStd = rand();
-			emit ObdStdChanged();
-			break;
-		}
-		default:
-		{
-			printf("Wrong PID: 0x%02X\n", pid);
-			break;
-		}
-	}
-
-	delayMs(50);
-}
-
-#endif
-
 void OBDIIWorker::run()
 {
-	int i = 0;
-
+	// Setup everything for the runner script
 	setup();
 
-	int logFileNb = 1;
-	QString logFileName;
-	while(true)
-	{
-		logFileName = QString().sprintf("/home/pi/logs/%d.log", logFileNb);
-		QFileInfo fileinfo(logFileName);
-		if(!fileinfo.exists())
-			break;
-		logFileNb++;
-	}
-
-	QFile file(logFileName);
-	if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-	{
-		printf("Cannot open log file\n");
-		return;
-	}
-	QTextStream out(&file);
-
-	PID otherPIDs[] = { PID::PID_SUPPORT00,
-						PID::MIL_CODE,
-						PID::FUEL_STATUS,
-						PID::ENGINE_LOAD,
-						PID::COOLANT_TEMP,
-						PID::STFT_BANK1,
-						PID::LTFT_BANK1,
-						PID::TIMING_ADV,
-						PID::INT_AIR_TEMP,
-						PID::THROTTLE_POS,
-						PID::OXY_SENSORS1,
-						PID::B1S1_O2_V,
-						PID::B1S2_O2_V,
-						PID::OBD_STD };
+	// List of PID that we do not need to poll frequently
+	const PID otherPIDs[] = { 	PID::PID_SUPPORT00,
+								PID::MIL_CODE,
+								PID::FUEL_STATUS,
+								PID::ENGINE_LOAD,
+								PID::COOLANT_TEMP,
+								PID::STFT_BANK1,
+								PID::LTFT_BANK1,
+								PID::TIMING_ADV,
+								PID::INT_AIR_TEMP,
+								PID::THROTTLE_POS,
+								PID::OXY_SENSORS1,
+								PID::B1S1_O2_V,
+								PID::B1S2_O2_V,
+								PID::OBD_STD };
 	int otherPIDIndex = 0;
 	
 	while(!mustStop)
 	{
 		if(checkErrorCodes) {
-			QString retString = check_mil_codes();
+			QString retString = checkMILCodes();
 			checkErrorCodes = false;
 			emit checkErrorCodesDone(retString);
 		}
 
 		if(clearErrorCodes) {
-			clear_mil_codes();
+			clearMILCodes();
 			clearErrorCodes = false;
 			emit clearErrorCodesDone("Cleared! Please restart engine");
 		}
 
+		// Poll these PIDs as frequently as possible
 		computeAndEmitPID(PID::ENGINE_RPM);
 		computeAndEmitPID(PID::VEHICLE_SPEED);
 		computeAndEmitPID(PID::MAF_AIR_FLOW);
-		computeAndEmitPID(otherPIDs[otherPIDIndex]);
 
+		// Poll one of the other PIDs each round
+		computeAndEmitPID(otherPIDs[otherPIDIndex]);
 		otherPIDIndex++;
 		otherPIDIndex %= ARRAY_SIZE(otherPIDs);
 
+		// Append a new line of data to the file
+		QTextStream out(logFile);
 		out << rpm << "," << speed << "," << airFlow << "\n";
 
+		// Update ODO (might be used for a UI tick in the future)
 		emit updateOdo();
 	}
 }
