@@ -135,6 +135,11 @@ Window {
             }
 
             TabButton {
+                id: nav
+                text: qsTr("Nav")
+            }
+
+            TabButton {
                 id: trip
                 text: qsTr("Trip")
             }
@@ -360,6 +365,15 @@ Window {
                     anchors.topMargin: 70
 
                     MusicItems { }
+                }
+            }
+
+            Item {
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+
+                Nav {
+                    id: navPage
                 }
             }
 
