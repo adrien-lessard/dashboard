@@ -13,6 +13,7 @@ sudo apt install at-spi2-core
 sudo apt install alsa-base
 sudo apt install alsa-utils
 sudo apt install pulseaudio
+sudo apt install pulseaudio-module-bluetooth
 sudo apt install gstreamer1.0-pulseaudio
 sudo apt install gstreamer1.0-plugins-good
 sudo apt install gstreamer1.0-plugins-bad
