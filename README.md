@@ -1,6 +1,6 @@
 # Dashboard
 
-Super fancy Raspberry Pi based infotainment system mor my car
+Super fancy Raspberry Pi based infotainment system for my car
 
 ## Global setup on the Pi
 
