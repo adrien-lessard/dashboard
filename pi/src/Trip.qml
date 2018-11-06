@@ -5,8 +5,10 @@ import Qt.labs.settings 1.0
 Column {
     id: tripCol
     objectName: "TripPage"
-    width: 500
+    anchors.left: parent.left
+    anchors.right: parent.right
     spacing: 10
+    padding: 10
 
     property bool firstupdateodo: true
 
@@ -140,17 +142,6 @@ Column {
             tripSettings.odo = 0;
             tripSettings.cons = 0;
             tripSettings.consCounter = 0;
-        }
-    }
-
-    Button {
-        anchors.horizontalCenter: parent.horizontalCenter
-        text: "Reset odo to 284000"
-
-        onClicked: {
-            allTimeTripSettings.odo = 284000
-            allTimeTripSettings.cons = 0
-            allTimeTripSettings.consCounter = 0;
         }
     }
 }

@@ -3,8 +3,7 @@ import QtLocation 5.6
 import QtPositioning 5.6
 
 Item {
-    width: 500
-    height: 440
+    anchors.fill: parent
 
     Plugin {
         id: mapboxglPlugin
@@ -24,11 +23,11 @@ Item {
         plugin: mapboxglPlugin
         query: aQuery
 
-        /*Component.onCompleted: {
+        Component.onCompleted: {
             query.addWaypoint(QtPositioning.coordinate(45.5063218,-73.6228451));
             query.addWaypoint(QtPositioning.coordinate(45.5077931,-73.6257011));
             routeModel.update();
-        }*/
+        }
 
         autoUpdate: false
 

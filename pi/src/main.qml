@@ -83,18 +83,6 @@ Window {
 
             style: CircularGaugeStyle {
                 tickmarkStepSize: 1
-                background: Canvas {
-                    Text {
-                        id: gearText
-                        font.pixelSize: 24
-                        text: "2"
-                        color: "#c4c4c4"
-                        horizontalAlignment: Text.AlignRight
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        anchors.top: parent.verticalCenter
-                        anchors.topMargin: 40
-                    }
-                }
             }
         }
 
@@ -113,7 +101,7 @@ Window {
     }
 
     Item {
-        id: item1
+        id: rightSectionContainer
         x: 300
         y: 0
         width: 500
@@ -121,13 +109,40 @@ Window {
         anchors.bottom: parent.bottom
         anchors.top: parent.top
 
-        TabBar {
-            id: tabBar
+        Text {
+            id: timeDisplay
             x: 0
             y: 0
+            width: parent.width
+            height: 40
+            color: "#c4c4c4"
+            font.pixelSize: 24
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+
+            function updateTime() {
+                text = Qt.formatTime(new Date(),"H:m")
+            }
+
+            Component.onCompleted: {
+                updateTime()
+            }
+
+            Timer {
+                id: timeUpdateTimer
+                interval: 60000;
+                running: true;
+                repeat: true;
+                onTriggered: timeDisplay.updateTime()
+            }
+        }
+
+        TabBar {
+            id: tabBar
             currentIndex: 0
             anchors.left: parent.left
             anchors.right: parent.right
+            anchors.bottom: parent.bottom
 
             TabButton {
                 id: music
@@ -156,6 +171,7 @@ Window {
             y: 40
             anchors.top: parent.top
             anchors.topMargin: 40
+            anchors.bottomMargin: 40
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             anchors.left: parent.left
@@ -385,7 +401,6 @@ Window {
                     id: tripScroll
                     clip: true
                     anchors.fill: parent
-                    padding: 10
 
                     Trip { 
                         id: tripPage
@@ -404,7 +419,8 @@ Window {
 
                     Column {
                         id: statusColumn
-                        width: 500
+                        anchors.left: parent.left
+                        anchors.right: parent.right
                         spacing: 10
                         padding: 10
 
