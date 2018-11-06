@@ -16,14 +16,9 @@ Enable SSH, I2C and serial:
 
 `$ sudo raspi-config`
 
-Make sure you are a member of the dialout group:
+Make sure you are a member of the tty group:
 
-`$ sudo usermod -a -G dialout pi`
-
-Make sure /dev/ttyS0 has the right access rights:
-
-`$ sudo chmod 660 /dev/ttyS0`
-`$ sudo chgrp dialout /dev/ttyS0`
+`$ sudo usermod -a -G tty pi`
 
 Copy the required configuration:
 
@@ -31,4 +26,33 @@ Copy the required configuration:
 $ mkdir -p ~/.config/autostart/
 $ cp config/dashboard.desktop ~/.config/autostart/
 $ cp config/start.sh ~/
+```
+
+## Remove the junk
+
+```console
+$ sudo apt remove idle*
+$ sudo apt remove scratch*
+$ sudo apt remove libreoffice*
+$ sudo apt remove sonic-pi
+$ sudo apt remove python3-thonny
+$ sudo apt remove minecraft-pi
+$ sudo apt remove debian-reference-*
+```
+
+```console
+$ rm -rf python_games
+```
+
+```console
+$ sudo apt autoremove
+```
+
+## Install useful stuff
+
+```console
+$ sudo apt install matchbox-keyboard
+$ sudo apt install cmake
+$ sudo apt install libgl-dev
+$ sudo apt install python3-mutagen
 ```
