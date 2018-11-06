@@ -29,6 +29,6 @@ Copy the required configuration:
 
 ```console
 $ mkdir -p ~/.config/autostart/
-$ cp config/dashboard.desktop ~/.config/autostart/`
-$ cp config/start.sh ~/`
+$ cp config/dashboard.desktop ~/.config/autostart/
+$ cp config/start.sh ~/
 ```
