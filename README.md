@@ -25,6 +25,10 @@ Make sure /dev/ttyS0 has the right access rights:
 `$ sudo chmod 660 /dev/ttyS0`
 `$ sudo chgrp dialout /dev/ttyS0`
 
-Copy config/dashboard.desktop to ~/.config/autostart
+Copy the required configuration:
 
-Copy config/start.sh to where config/dashboard.desktop points. Make sure to give the good path to the executable
+```console
+$ mkdir -p ~/.config/autostart`
+$ cp config/dashboard.desktop ~/.config/autostart/`
+$ cp config/start.sh ~/`
+```

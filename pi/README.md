@@ -9,7 +9,6 @@ sudo rpi-update
 
 # Packages to install
 ```console
-sudo apt install at-spi2-core
 sudo apt install alsa-base
 sudo apt install alsa-utils
 sudo apt install pulseaudio
@@ -48,21 +47,21 @@ Open /etc/lightdm/lightdm.conf and add the following line
 
 xserver-command=X -s 0 -dpms
 
-# Qt version 5.11.1 mandatory
+# Qt version 5.11.x mandatory
 
-Top build:
+A custom build of QT will probably be required. Refer to buildqt.md. To build the executable, run
 
 ```console
-cmake .. -DCMAKE_PREFIX_PATH=/home/pi/Downloads/usr/local/Qt-5.11.1
+cmake .. -DCMAKE_PREFIX_PATH=/usr/local/Qt-5.11.2
 ```
 
-where the path corresponds to where QT 5.11 is installed
+where the path corresponds to where QT is installed
 
 Also make sure qt.conf is next to the executable and points to the installation of QT:
 
 ```
 [Paths]
-Prefix = /home/pi/Downloads/usr/local/Qt-5.11.1
+Prefix = /usr/local/Qt-5.11.2
 ```
 
 # Build on other system for testing
