@@ -28,7 +28,7 @@ Make sure /dev/ttyS0 has the right access rights:
 Copy the required configuration:
 
 ```console
-$ mkdir -p ~/.config/autostart`
+$ mkdir -p ~/.config/autostart/
 $ cp config/dashboard.desktop ~/.config/autostart/`
 $ cp config/start.sh ~/`
 ```
