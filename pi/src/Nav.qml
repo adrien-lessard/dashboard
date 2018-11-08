@@ -7,9 +7,9 @@ Item {
 
     Plugin {
         id: mapboxglPlugin
-        name: "mapbox"
+        name: "mapboxgl"
         PluginParameter {
-            name: "mapbox.access_token"
+            name: "mapboxgl.access_token"
             value: "pk.eyJ1IjoiYWRyaWVuLWxlc3NhcmQiLCJhIjoiY2pucXljamxpMDJueDNxcXBmcnpvb2gyZiJ9.C0U26td5kudACofZLgqHEg"
         }
     }
@@ -20,12 +20,19 @@ Item {
 
     RouteModel {
         id: routeModel
-        plugin: mapboxglPlugin
+        plugin: Plugin {
+            name: "mapbox"
+			PluginParameter {
+	            name: "mapbox.access_token"
+	            value: "pk.eyJ1IjoiYWRyaWVuLWxlc3NhcmQiLCJhIjoiY2pucXljamxpMDJueDNxcXBmcnpvb2gyZiJ9.C0U26td5kudACofZLgqHEg"
+	        }
+        }
         query: aQuery
 
         Component.onCompleted: {
-            query.addWaypoint(QtPositioning.coordinate(45.5063218,-73.6228451));
-            query.addWaypoint(QtPositioning.coordinate(45.5077931,-73.6257011));
+            query.addWaypoint(QtPositioning.coordinate(45.5070152,-73.6233069));
+            query.addWaypoint(QtPositioning.coordinate(45.5112417,-73.6168672));
+            query.addWaypoint(QtPositioning.coordinate(45.6883239,-73.9344572));
             routeModel.update();
         }
 
