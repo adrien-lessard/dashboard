@@ -20,6 +20,10 @@ Make sure you are a member of the tty group:
 
 `$ sudo usermod -a -G tty pi`
 
+Create the log directory:
+
+`$ mkdir ~/logs`
+
 Copy the required configuration:
 
 ```console
@@ -56,3 +60,33 @@ $ sudo apt install cmake
 $ sudo apt install libgl-dev
 $ sudo apt install python3-mutagen
 ```
+
+## Black screen until app is tarted
+
+This allows the desktop to be hidden during a normal start sequence be to still be readily accessible if the dashboard is stopped.
+
+Edit `/boot/config.txt`, add
+
+`disable_splash=1`
+
+Run
+
+```console
+$ sudo systemctl mask plymouth-start.service
+```
+
+Add this to the end of the line on `/boot/cmdline.txt`
+
+`quiet loglevel=3 logo.nologo vt.global_cursor_default=0`
+
+Create a delay script for the taskbar
+
+```console
+$ cp config/delaytaskbar.sh ~/.config/lxsession/LXDE-pi/delaytaskbar.sh
+```
+
+Edit `~/.config/lxsession/LXDE-pi/autostart` and remove the line starting with `@lxpanel`. Then, add
+
+`@sh /home/pi/.config/lxsession/LXDE-pi/delaytaskbar.sh`
+
+Reboot
