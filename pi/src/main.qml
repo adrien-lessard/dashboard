@@ -5,6 +5,7 @@ import QtQuick.Extras 1.4
 import QtQuick.Layouts 1.3
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
+import QtQml 2.11
 import QtMultimedia 5.8
 import Qt.labs.settings 1.0
 
@@ -48,6 +49,32 @@ Window {
 
     color: "#363636"
     title: qsTr("Dashboard")
+
+    Image {
+        id: splashScreenImage
+        x: 0
+        y: 0
+        z: 100
+        opacity: 1
+        source: "../img/fire.svg"
+
+        Timer {
+            interval: 4000;
+            running: true;
+            repeat: false;
+            onTriggered: splashScreenFadeOutImage.running = true
+        }
+
+        OpacityAnimator {
+            id: splashScreenFadeOutImage
+            target: splashScreenImage
+            from: 1;
+            to: 0;
+            duration: 500
+            running: false
+            easing.type: Easing.InCubic
+        }
+    }
 
     Column {
         id: column

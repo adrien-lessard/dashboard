@@ -8,5 +8,6 @@
         <file>../img/play.svg</file>
         <file>../img/playFull.svg</file>
         <file>../img/pause.svg</file>
+        <file>../img/fire.svg</file>
     </qresource>
 </RCC>
