@@ -401,6 +401,7 @@ Window {
                     id: tripScroll
                     clip: true
                     anchors.fill: parent
+                    contentWidth: -1 // prevent horizontal scroll
 
                     Trip { 
                         id: tripPage
