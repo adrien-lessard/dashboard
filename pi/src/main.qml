@@ -148,7 +148,7 @@ Window {
             horizontalAlignment: Text.AlignHCenter
 
             function updateTime() {
-                text = Qt.formatTime(new Date(),"H:m")
+                text = Qt.formatTime(new Date(),"HH:mm")
             }
 
             Component.onCompleted: {
