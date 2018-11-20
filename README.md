@@ -61,7 +61,7 @@ $ sudo apt install libgl-dev
 $ sudo apt install python3-mutagen
 ```
 
-## Black screen until app is tarted
+## Black screen until app is started
 
 This allows the desktop to be hidden during a normal start sequence be to still be readily accessible if the dashboard is stopped.
 
