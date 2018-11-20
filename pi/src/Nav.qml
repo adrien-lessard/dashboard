@@ -4,6 +4,11 @@ import QtPositioning 5.6
 
 Item {
     anchors.fill: parent
+    objectName: "NavPage"
+
+    function setNewCoo(lat, lon) {
+        map.center = QtPositioning.coordinate(lat, lon)
+    }
 
     Plugin {
         id: mapboxglPlugin
@@ -30,9 +35,9 @@ Item {
         query: aQuery
 
         Component.onCompleted: {
-            query.addWaypoint(QtPositioning.coordinate(45.5070152,-73.6233069));
-            query.addWaypoint(QtPositioning.coordinate(45.5112417,-73.6168672));
-            query.addWaypoint(QtPositioning.coordinate(45.6883239,-73.9344572));
+            query.addWaypoint(QtPositioning.coordinate(45.5070152,-73.6233069))
+            query.addWaypoint(QtPositioning.coordinate(45.5112417,-73.6168672))
+            query.addWaypoint(QtPositioning.coordinate(45.6883239,-73.9344572))
             routeModel.update();
         }
 

@@ -6,11 +6,14 @@
 
 #include "DashboardApplication.h"
 #include "OBDIIWorker.h"
+#include "LocationWorker.h"
 
 int main(int argc, char *argv[])
 {
 	OBDIIWorker* worker = new OBDIIWorker;
 	DashboardApplication* app = new DashboardApplication(worker, argc, argv);
+
+	LocationWorker* locationner = new LocationWorker();
 
 	// Hide cursor
 	app->setOverrideCursor(QCursor(Qt::BlankCursor));
@@ -30,6 +33,7 @@ int main(int argc, char *argv[])
 	// Establish connections between UI and backend
 	QObject* topLevel = engine.rootObjects().value(0);
 	QObject* tripPage = topLevel->findChild<QObject*>("TripPage");
+	QObject* navPage = topLevel->findChild<QObject*>("NavPage");
 	QQuickWindow* window = qobject_cast<QQuickWindow*>(topLevel);
 	QObject::connect(window, SIGNAL(checkErrorCodes()), worker, SLOT(handleCheckErrorCodes()));
 	QObject::connect(window, SIGNAL(clearErrorCodes()), worker, SLOT(handleClearErrorCodes()));
@@ -38,6 +42,7 @@ int main(int argc, char *argv[])
 	QObject::connect(worker, SIGNAL(checkErrorCodesDone(QVariant)), window, SLOT(checkErrorCodesDone(QVariant)));
 	QObject::connect(worker, SIGNAL(clearErrorCodesDone(QVariant)), window, SLOT(clearErrorCodesDone(QVariant)));
 	QObject::connect(worker, SIGNAL(updateOdo()), tripPage, SLOT(updateOdo()));
+	QObject::connect(locationner, SIGNAL(setNewCoo(QVariant, QVariant)), navPage, SLOT(setNewCoo(QVariant, QVariant)));
 
 	QObject::connect(app, &DashboardApplication::aboutToQuit, app, &DashboardApplication::killWorker);
 	worker->start();
