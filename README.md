@@ -12,13 +12,9 @@ Change the password for user Pi:
 
 `$ sudo passwd pi`
 
-Enable SSH, I2C and serial:
+Enable SSH, I2C and serial port and **disable the serial console**:
 
 `$ sudo raspi-config`
-
-Make sure you are a member of the tty group:
-
-`$ sudo usermod -a -G tty pi`
 
 Create the log directory:
 
