@@ -59,7 +59,7 @@ $ sudo vim /etc/dphys-swapfile
 ```
 Change the size of the swap:
 
-CONF_SWAPSIZE=1024
+CONF_SWAPSIZE=100
 
 ```console
 $ sudo dphys-swapfile swapon
