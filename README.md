@@ -2,6 +2,8 @@
 
 Super fancy Raspberry Pi based infotainment system for my car
 
+![Preview](https://i.imgur.com/lRQowhB.png)
+
 ## Global setup on the Pi
 
 Change the hostname of the Pi to whatever you want:
