@@ -2,146 +2,149 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import Qt.labs.settings 1.0
 
-Column {
-    id: tripCol
+ScrollView {
+    id: tripScroll
     objectName: "TripPage"
-    anchors.left: parent.left
-    anchors.right: parent.right
-    spacing: 10
-    padding: 10
-
-    property bool firstupdateodo: true
+    clip: true
+    anchors.fill: parent
+    contentWidth: -1 // prevent horizontal scroll
 
     function updateOdo() {
         var t = new Date().getTime();
 
         if(!tripCol.firstupdateodo) {
-            allTimeTripSettings.odo += applicationData.speed * (t - allTimeTripSettings.lastUpdate) / 3600000;
+            tripSettings.all_odo += applicationData.speed * (t - tripSettings.all_lastUpdate) / 3600000;
             tripSettings.odo += applicationData.speed * (t - tripSettings.lastUpdate) / 3600000;
 
-            allTimeTripSettings.cons = (allTimeTripSettings.cons * allTimeTripSettings.consCounter + applicationData.airFlow) / (++allTimeTripSettings.consCounter);
+            tripSettings.all_cons = (tripSettings.all_cons * tripSettings.all_consCounter + applicationData.airFlow) / (++tripSettings.all_consCounter);
             tripSettings.cons = (tripSettings.cons * tripSettings.consCounter + applicationData.airFlow) / (++tripSettings.consCounter);
         }
 
-        allTimeTripSettings.lastUpdate = t;
+        tripSettings.all_lastUpdate = t;
         tripSettings.lastUpdate = t;
         tripCol.firstupdateodo = false;
     }
 
-    Settings {
-        id: allTimeTripSettings
-        property real odo: 284000
-        property real cons: 0
-        property int consCounter: 0
-        property var lastUpdate: 0
-    }
+    Column {
+        id: tripCol
+        anchors.left: parent.left
+        anchors.right: parent.right
+        spacing: 10
+        padding: 10
 
-    Settings {
-        id: tripSettings
-        property real odo: 0
-        property real cons: 0
-        property int consCounter: 0
-        property var lastUpdate: 0
-    }
+        property bool firstupdateodo: true
 
-    Text {
-        color: "#c4c4c4"
-        text: "All time statistics"
-        font.pixelSize: 24
-    }
+        Settings {
+            id: tripSettings
+            property real all_odo: 284000
+            property real all_cons: 0
+            property int all_consCounter: 0
+            property var all_lastUpdate: 0
+            property real odo: 0
+            property real cons: 0
+            property int consCounter: 0
+            property var lastUpdate: 0
+        }
 
-    Row {
-        Text {
-            width: 150
-            color: "#c4c4c4"
-            text: "Odo"
-        }
-        Text {
-            width: 150
-            color: "#c4c4c4"
-            text: Number(allTimeTripSettings.odo).toFixed(0)
-        }
         Text {
             color: "#c4c4c4"
-            text: "km"
+            text: "All time statistics"
+            font.pixelSize: 24
         }
-    }
 
-    Row {
-        Text {
-            width: 150
-            color: "#c4c4c4"
-            text: "Overall cons."
+        Row {
+            Text {
+                width: 150
+                color: "#c4c4c4"
+                text: "Odo"
+            }
+            Text {
+                width: 150
+                color: "#c4c4c4"
+                text: Number(tripSettings.all_odo).toFixed(1)
+            }
+            Text {
+                color: "#c4c4c4"
+                text: "km"
+            }
         }
-        Text {
-            width: 150
-            color: "#c4c4c4"
-            text: Number(allTimeTripSettings.cons).toFixed(2)
-        }
-        Text {
-            color: "#c4c4c4"
-            text: "g/s"
-        }
-    }
 
-    Item {
-        width: 50
-        height: 50
-    }
+        Row {
+            Text {
+                width: 150
+                color: "#c4c4c4"
+                text: "Overall cons."
+            }
+            Text {
+                width: 150
+                color: "#c4c4c4"
+                text: Number(tripSettings.all_cons).toFixed(2)
+            }
+            Text {
+                color: "#c4c4c4"
+                text: "g/s"
+            }
+        }
 
-    Text {
-        color: "#c4c4c4"
-        text: "Trip statistics"
-        font.pixelSize: 24
-    }
+        Item {
+            width: 50
+            height: 50
+        }
 
-    Row {
-        Text {
-            width: 150
-            color: "#c4c4c4"
-            text: "Odo"
-        }
-        Text {
-            width: 150
-            color: "#c4c4c4"
-            text: Number(tripSettings.odo).toFixed(0)
-        }
-        Text {
-            color: "#c4c4c4"
-            text: "km"
-        }
-    }
-
-    Row {
-        Text {
-            width: 150
-            color: "#c4c4c4"
-            text: "Overall cons."
-        }
-        Text {
-            width: 150
-            color: "#c4c4c4"
-            text: Number(tripSettings.cons).toFixed(2)
-        }
         Text {
             color: "#c4c4c4"
-            text: "g/s"
+            text: "Trip statistics"
+            font.pixelSize: 24
         }
-    }
 
-    Item {
-        width: 50
-        height: 50
-    }
+        Row {
+            Text {
+                width: 150
+                color: "#c4c4c4"
+                text: "Odo"
+            }
+            Text {
+                width: 150
+                color: "#c4c4c4"
+                text: Number(tripSettings.odo).toFixed(1)
+            }
+            Text {
+                color: "#c4c4c4"
+                text: "km"
+            }
+        }
 
-    Button {
-        anchors.horizontalCenter: parent.horizontalCenter
-        text: "Reset trip"
+        Row {
+            Text {
+                width: 150
+                color: "#c4c4c4"
+                text: "Overall cons."
+            }
+            Text {
+                width: 150
+                color: "#c4c4c4"
+                text: Number(tripSettings.cons).toFixed(2)
+            }
+            Text {
+                color: "#c4c4c4"
+                text: "g/s"
+            }
+        }
 
-        onClicked: {
-            tripSettings.odo = 0;
-            tripSettings.cons = 0;
-            tripSettings.consCounter = 0;
+        Item {
+            width: 50
+            height: 50
+        }
+
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "Reset trip"
+
+            onClicked: {
+                tripSettings.odo = 0;
+                tripSettings.cons = 0;
+                tripSettings.consCounter = 0;
+            }
         }
     }
 }
