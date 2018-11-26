@@ -9,7 +9,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
-
+#include <QDateTime>
 
 /* PID query result length */
 constexpr size_t PIDResLens[] =
@@ -267,15 +267,20 @@ void OBDIIWorker::setup()
 	portInit();
 
 	// Initialize the log file
-	// Find an unused name
+	// By default, use current date and time as filename
+	QDateTime currentDate = QDateTime::currentDateTime();
+	QString logFileName = QString("/home/pi/logs/") + currentDate.toString("dd.MM.yyyy_HH.mm.ss.log");
 	int logFileNb = 1;
-	QString logFileName;
+
 	while(true)
 	{
-		logFileName = QString().sprintf("/home/pi/logs/%d.log", logFileNb);
+		// If file does not exist yet, use it as log file
 		QFileInfo fileinfo(logFileName);
 		if(!fileinfo.exists())
 			break;
+
+		// If we can't use the date as the file name, use a sequential number instead
+		logFileName = QString().sprintf("/home/pi/logs/%d.log", logFileNb);
 		logFileNb++;
 	}
 
@@ -451,6 +456,9 @@ void OBDIIWorker::run()
 								PID::B1S2_O2_V,
 								PID::OBD_STD };
 	int otherPIDIndex = 0;
+
+	// Out stream for logging
+	QTextStream out(logFile);
 	
 	while(!mustStop)
 	{
@@ -477,8 +485,24 @@ void OBDIIWorker::run()
 		otherPIDIndex %= ARRAY_SIZE(otherPIDs);
 
 		// Append a new line of data to the file
-		QTextStream out(logFile);
 		out << rpm << "," << speed << "," << airFlow << "\n";
+		if(otherPIDIndex == 0)
+			out << 	support00 << "," << 
+					milCode << "," << 
+					fuelStatus << "," << 
+					engineLoad << "," << 
+					coolantTemp << "," << 
+					stftB1 << "," << 
+					ltftB1 << "," << 
+					timingAdv << "," << 
+					intAirTmp << "," << 
+					throttle << "," << 
+					oxySensors << "," << 
+					b1s1 << "," << 
+					b1s1p << "," << 
+					b1s2 << "," << 
+					b1s2p << "," << 
+					obdStd << "\n";
 
 		// Update ODO (might be used for a UI tick in the future)
 		emit updateOdo();
