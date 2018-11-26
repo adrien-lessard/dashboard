@@ -9,6 +9,8 @@ import QtQml 2.11
 import QtMultimedia 5.8
 import Qt.labs.settings 1.0
 
+import "Theme.js" as Theme;
+
 ScrollView {
     id: statusScroll
     objectName: "StatusPage"
@@ -65,7 +67,7 @@ ScrollView {
 
             Text {
                 id: errorCodeResponseText
-                color: "#c4c4c4"
+                color: Theme.txColor
                 text: qsTr("Check engine is ON\nError code(s):\n\nC1600")
                 horizontalAlignment: Text.AlignHCenter
                 anchors.left: parent.left

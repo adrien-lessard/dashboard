@@ -9,6 +9,8 @@ import QtQml 2.11
 import QtMultimedia 5.8
 import Qt.labs.settings 1.0
 
+import "Theme.js" as Theme;
+
 Window {
 
     signal checkErrorCodes()
@@ -47,7 +49,7 @@ Window {
         onActivated: visibility = Window.Windowed
     }
 
-    color: "#363636"
+    color: Theme.bgColor
     title: qsTr("Dashboard")
 
     Image {
@@ -86,7 +88,7 @@ Window {
         Text {
             id: speed
             height: 120
-            color: "#c4c4c4"
+            color: Theme.txColor
             text: applicationData.speed
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
@@ -126,7 +128,7 @@ Window {
 
             id: cons
             height: 120
-            color: "#c4c4c4"
+            color: Theme.txColor
             text: airFlowToConsumption(applicationData.speed)
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
@@ -152,7 +154,7 @@ Window {
             y: 0
             width: parent.width
             height: 40
-            color: "#c4c4c4"
+            color: Theme.txColor
             font.pixelSize: 24
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter

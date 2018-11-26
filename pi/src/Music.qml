@@ -3,12 +3,14 @@ import QtQuick.Controls 2.2
 import QtMultimedia 5.8
 import Qt.labs.settings 1.0
 
+import "Theme.js" as Theme;
+
 Item {
 	anchors.fill: parent
     objectName: "MusicPage"
 
 	Text {
-        color: "#c4c4c4"
+        color: Theme.txColor
         text: playMusic.metaData.title ? playMusic.metaData.title : ""
         horizontalAlignment: Text.AlignHCenter
         anchors.left: parent.left
@@ -69,7 +71,7 @@ Item {
 
         Text {
             width: 20
-            color: "#c4c4c4"
+            color: Theme.txColor
             font.pixelSize: 26
             padding: -2
             text: "<"
@@ -90,7 +92,7 @@ Item {
                 value: playMusic.position / playMusic.duration
                 background: Rectangle {
                     height: parent.height
-                    color: "#c4c4c4"
+                    color: Theme.txColor
                     radius: 3
                 }
 
@@ -105,7 +107,7 @@ Item {
 
         Text {
             width: 20
-            color: "#c4c4c4"
+            color: Theme.txColor
             font.pixelSize: 26
             padding: -2
             text: ">"
@@ -139,7 +141,7 @@ Item {
 
         Text {
             width: 40
-            color: "#c4c4c4"
+            color: Theme.txColor
             font.pixelSize: 26
             padding: -2
             text: "-"
@@ -155,7 +157,7 @@ Item {
         Text {
             id: volumeControl
             width: 40
-            color: "#c4c4c4"
+            color: Theme.txColor
             font.pixelSize: 26
             padding: -2
             text: volumeControlSettings.volume
@@ -185,7 +187,7 @@ Item {
 
         Text {
             width: 40
-            color: "#c4c4c4"
+            color: Theme.txColor
             font.pixelSize: 26
             padding: -2
             text: "+"

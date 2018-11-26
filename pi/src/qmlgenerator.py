@@ -5,6 +5,8 @@ from PIL import Image
 
 starttext = '''import QtQuick 2.9
 
+import "Theme.js" as Theme;
+
 Column {
     id: musicColumn
     anchors.left: parent.left
@@ -31,7 +33,7 @@ templateStr = '''
             Text {{
                 text: "{Artist} - {Album}"
                 height: parent.height
-                color: "#c4c4c4"
+                color: Theme.txColor
                 padding: 0, 0, 0, 10
                 verticalAlignment: Text.AlignVCenter
             }}

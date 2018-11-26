@@ -2,6 +2,8 @@ import QtQuick 2.9
 import QtQuick.Controls 2.2
 import Qt.labs.settings 1.0
 
+import "Theme.js" as Theme;
+
 ScrollView {
     id: tripScroll
     objectName: "TripPage"
@@ -47,7 +49,7 @@ ScrollView {
         }
 
         Text {
-            color: "#c4c4c4"
+            color: Theme.txColor
             text: "All time statistics"
             font.pixelSize: 24
         }
@@ -55,16 +57,16 @@ ScrollView {
         Row {
             Text {
                 width: 150
-                color: "#c4c4c4"
+                color: Theme.txColor
                 text: "Odo"
             }
             Text {
                 width: 150
-                color: "#c4c4c4"
+                color: Theme.txColor
                 text: Number(tripSettings.all_odo).toFixed(1)
             }
             Text {
-                color: "#c4c4c4"
+                color: Theme.txColor
                 text: "km"
             }
         }
@@ -72,16 +74,16 @@ ScrollView {
         Row {
             Text {
                 width: 150
-                color: "#c4c4c4"
+                color: Theme.txColor
                 text: "Overall cons."
             }
             Text {
                 width: 150
-                color: "#c4c4c4"
+                color: Theme.txColor
                 text: Number(tripSettings.all_cons).toFixed(2)
             }
             Text {
-                color: "#c4c4c4"
+                color: Theme.txColor
                 text: "g/s"
             }
         }
@@ -92,7 +94,7 @@ ScrollView {
         }
 
         Text {
-            color: "#c4c4c4"
+            color: Theme.txColor
             text: "Trip statistics"
             font.pixelSize: 24
         }
@@ -100,16 +102,16 @@ ScrollView {
         Row {
             Text {
                 width: 150
-                color: "#c4c4c4"
+                color: Theme.txColor
                 text: "Odo"
             }
             Text {
                 width: 150
-                color: "#c4c4c4"
+                color: Theme.txColor
                 text: Number(tripSettings.odo).toFixed(1)
             }
             Text {
-                color: "#c4c4c4"
+                color: Theme.txColor
                 text: "km"
             }
         }
@@ -117,16 +119,16 @@ ScrollView {
         Row {
             Text {
                 width: 150
-                color: "#c4c4c4"
+                color: Theme.txColor
                 text: "Overall cons."
             }
             Text {
                 width: 150
-                color: "#c4c4c4"
+                color: Theme.txColor
                 text: Number(tripSettings.cons).toFixed(2)
             }
             Text {
-                color: "#c4c4c4"
+                color: Theme.txColor
                 text: "g/s"
             }
         }
