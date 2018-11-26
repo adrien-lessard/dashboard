@@ -2,7 +2,8 @@ import QtQuick 2.9
 
 Column {
     id: additionalPIDs
-    width: 500 - 2 * parent.padding
+    anchors.left: parent.left
+    anchors.right: parent.right
 
     function uint32(value) {
     	return "0x" + ("0x0000000" + value.toString(16)).toUpperCase().substr(-8)

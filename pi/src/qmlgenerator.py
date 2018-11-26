@@ -7,7 +7,8 @@ starttext = '''import QtQuick 2.9
 
 Column {
     id: musicColumn
-    width: 500'''
+    anchors.left: parent.left
+    anchors.right: parent.right'''
 
 endtext = '''
 }

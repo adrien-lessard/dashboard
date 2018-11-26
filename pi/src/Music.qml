@@ -205,6 +205,7 @@ Item {
         clip: true
         anchors.fill: parent
         anchors.topMargin: 70
+        contentWidth: -1 // prevent horizontal scroll
 
         MusicItems { }
     }

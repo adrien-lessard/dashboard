@@ -14,6 +14,7 @@ ScrollView {
     objectName: "StatusPage"
     clip: true
     anchors.fill: parent
+    contentWidth: -1 // prevent horizontal scroll
 
     Column {
         id: statusColumn
@@ -35,7 +36,8 @@ ScrollView {
 
         Column {
             id: canCheckCodes
-            width: 500 - 2*parent.padding
+            anchors.left: parent.left
+            anchors.right: parent.right
             visible: speed.text == 0
             spacing: parent.spacing
             
