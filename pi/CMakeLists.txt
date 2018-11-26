@@ -10,6 +10,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 include_directories(src)
 include_directories(portpc)
 include_directories(portpi)
+include_directories(../lib/sunset/src)
 
 # Instruct CMake to run moc automatically when needed
 set(CMAKE_AUTOMOC ON)
@@ -48,4 +49,5 @@ add_executable(${PROJECT} ${HEADERS} ${SOURCES} ${QT_RESOURCES} ${ADDITIONAL_HEA
 set_property(TARGET ${PROJECT} PROPERTY CXX_STANDARD 14)
 
 # Use the Widgets module from Qt 5
-target_link_libraries(${PROJECT} Qt5::Core Qt5::Qml Qt5::Quick ${ADDITIONAL_LIBS})
+find_library(SUNSET NAMES sunset PATHS ../lib/sunset)
+target_link_libraries(${PROJECT} Qt5::Core Qt5::Qml Qt5::Quick ${ADDITIONAL_LIBS} ${SUNSET})

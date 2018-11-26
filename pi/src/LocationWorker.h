@@ -17,6 +17,11 @@ signals:
 
 private:
 	void onConnect();
+	void updateSunriseSunset();
 
 	QTcpServer* server;
+
+	double lat;
+	double lon;
+	double timeZoneOffset;
 };
