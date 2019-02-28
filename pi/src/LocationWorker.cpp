@@ -85,7 +85,7 @@ void LocationWorker::updateSunriseSunset()
 	}
 
 	char command[128];
-	sprintf(command, "echo %u > /sys/class/backlight/rpi_backlight/brightness", brightness);
+	sprintf(command, "sudo sh -c \"echo %u > /sys/class/backlight/rpi_backlight/brightness\"", brightness);
 	system(command);
 
 	//std::cout << command << std::endl;
