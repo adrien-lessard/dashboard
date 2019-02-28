@@ -78,6 +78,27 @@ Window {
         }
     }
 
+    Rectangle {
+        id: over9000
+        x: 0
+        y: 0
+        z: 50
+        width: window.width
+        height: window.height
+        property int speedLimit: 120
+        property real arg
+        opacity: applicationData.speed > speedLimit ? Math.sin(arg) / 2 : 0
+        color: "#FF0000"
+
+        NumberAnimation on arg {
+            from: 0
+            to: Math.PI*2
+            duration: 1000
+            loops: Animation.Infinite
+            running: applicationData.speed > over9000.speedLimit
+        }
+    }
+
     Column {
         id: column
         width: 300
