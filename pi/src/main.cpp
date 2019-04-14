@@ -34,13 +34,14 @@ int main(int argc, char *argv[])
 	QObject* topLevel = engine.rootObjects().value(0);
 	QObject* tripPage = topLevel->findChild<QObject*>("TripPage");
 	QObject* navPage = topLevel->findChild<QObject*>("NavPage");
+	QObject* statusPage = topLevel->findChild<QObject*>("StatusPage");
 	QQuickWindow* window = qobject_cast<QQuickWindow*>(topLevel);
 	QObject::connect(window, SIGNAL(checkErrorCodes()), worker, SLOT(handleCheckErrorCodes()));
 	QObject::connect(window, SIGNAL(clearErrorCodes()), worker, SLOT(handleClearErrorCodes()));
 	QObject::connect(window, SIGNAL(checkForUpdates()), app, SLOT(handleCheckForUpdates()));
 	QObject::connect(window, SIGNAL(killApplication()), app, SLOT(handleKillApplication()));
-	QObject::connect(worker, SIGNAL(checkErrorCodesDone(QVariant)), window, SLOT(checkErrorCodesDone(QVariant)));
-	QObject::connect(worker, SIGNAL(clearErrorCodesDone(QVariant)), window, SLOT(clearErrorCodesDone(QVariant)));
+	QObject::connect(worker, SIGNAL(checkErrorCodesDone(QVariant)), statusPage, SLOT(checkErrorCodesDone(QVariant)));
+	QObject::connect(worker, SIGNAL(clearErrorCodesDone(QVariant)), statusPage, SLOT(clearErrorCodesDone(QVariant)));
 	QObject::connect(worker, SIGNAL(updateOdo()), tripPage, SLOT(updateOdo()));
 	QObject::connect(locationner, SIGNAL(setNewCoo(QVariant, QVariant)), navPage, SLOT(setNewCoo(QVariant, QVariant)));
 
