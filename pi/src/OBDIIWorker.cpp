@@ -240,7 +240,7 @@ QString OBDIIWorker::checkMILCodes()
 	}
 	else
 	{
-		printf("CHECK ENGINE OFF, good for you!\n");
+		retText = "CHECK ENGINE OFF, good for you!";
 	}
 
 	return retText;

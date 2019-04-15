@@ -23,7 +23,7 @@ ScrollView {
         errorCodeResponseText.text = text
         errorCodeResponseText.visible = true
 
-        if(text != "") {
+        if(!text.includes('CHECK')) {
             clearErrorCodesButton.visible = true
         }
     }
