@@ -18,22 +18,6 @@ Window {
     signal checkForUpdates()
     signal killApplication()
 
-    function checkErrorCodesDone(text) {
-        console.log("checkEngineDone: " + text)
-        errorCodeResponseText.text = text
-        errorCodeResponseText.visible = true
-        
-        if(text != "") {
-            clearErrorCodesButton.visible = true
-        }
-    }
-
-    function clearErrorCodesDone(text) {
-        console.log("clearEngineDone: " + text)
-        errorCodeResponseText.text = text
-        errorCodeResponseText.visible = true
-    }
-
     id: window
     visible: true
     width: 800
