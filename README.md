@@ -80,11 +80,9 @@ Add this to the end of the line on `/boot/cmdline.txt`
 Create a delay script for the taskbar
 
 ```console
+$ mkdir -p ~/.config/lxsession/LXDE-pi
 $ cp config/delaytaskbar.sh ~/.config/lxsession/LXDE-pi/delaytaskbar.sh
+$ cp config/autostart ~/.config/lxsession/LXDE-pi/
 ```
-
-Edit `~/.config/lxsession/LXDE-pi/autostart` and remove the line starting with `@lxpanel`. Then, add
-
-`@sh /home/pi/.config/lxsession/LXDE-pi/delaytaskbar.sh`
 
 Reboot

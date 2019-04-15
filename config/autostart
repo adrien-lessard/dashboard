@@ -1,0 +1,4 @@
+@pcmanfm --desktop --profile LXDE-pi
+@xscreensaver -no-splash
+@sh /home/pi/.config/lxsession/LXDE-pi/delaytaskbar.sh
+
