@@ -44,10 +44,10 @@ A3 Memory Split
 
 256
 
-## Screen turn-off disable
+## Screen turn-off disable and pointer disable
 Open /etc/lightdm/lightdm.conf and add the following line
 
-xserver-command=X -s 0 -dpms
+xserver-command=X -s 0 -dpms -nocursor
 
 # Qt version 5.11.x mandatory
 
