@@ -6,12 +6,18 @@ import Qt.labs.settings 1.0
 import "Theme.js" as Theme;
 
 Item {
-	anchors.fill: parent
+    anchors.fill: parent
     objectName: "MusicPage"
 
-	Text {
+    Text {
+        function getTitle(str) {
+            var l = str.toString().split('/')
+            var len = l.length
+            return l[len-1]
+        }
+
         color: Theme.txColor
-        text: playMusic.metaData.title ? playMusic.metaData.title : ""
+        text: getTitle(playMusic.playlist.currentItemSource)
         horizontalAlignment: Text.AlignHCenter
         anchors.left: parent.left
         anchors.right: parent.right
