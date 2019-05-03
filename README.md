@@ -59,6 +59,12 @@ $ sudo apt install libgl-dev
 $ sudo apt install python3-mutagen
 ```
 
+## Faster boot and operation
+
+Edit /boot/config.txt, add
+
+`dtoverlay=sdtweak,overclock_50=100
+
 ## Black screen until app is started
 
 This allows the desktop to be hidden during a normal start sequence be to still be readily accessible if the dashboard is stopped.
