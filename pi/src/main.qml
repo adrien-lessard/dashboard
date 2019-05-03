@@ -7,7 +7,6 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Dialogs 1.2
 import QtQml 2.11
 import QtMultimedia 5.8
-import Qt.labs.settings 1.0
 
 import "Theme.js" as Theme;
 
