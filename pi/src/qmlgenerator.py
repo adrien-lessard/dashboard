@@ -1,6 +1,7 @@
 
 import os
 import mutagen
+import unidecode
 from PIL import Image
 
 starttext = '''import QtQuick 2.9
@@ -10,14 +11,14 @@ import "Theme.js" as Theme;
 Column {
     id: musicColumn
     anchors.left: parent.left
-    anchors.right: parent.right'''
+    anchors.right: parent.right
+'''
 
 endtext = '''
 }
 '''
 
 templateStr = '''
-
     Item {{
         width: parent.width
         height: 75
@@ -48,17 +49,22 @@ templateStr = '''
                 playMusic.play();
             }}
         }}
-    }}'''
+    }}
+'''
 
 songTemplate = '                playMusic.playlist.addItem("file:///home/pi/Music/{Artist}/{Album}/{Song}");'
 
 with open('MusicItems.qml', 'w') as f:
 	f.write(starttext)
 
-	artistList = list()
+	# Sort artists in alphabetical order
+	artistList = []
+	nonAccentedArtistList = []
 	for artist in os.listdir('/home/pi/Music'):
-		artistList.append(str(artist))
-	artistList.sort()
+		if os.path.isdir('/home/pi/Music/' + str(artist)):
+			artistList.append(str(artist))
+			nonAccentedArtistList.append(unidecode.unidecode(str(artist)))
+	artistList = [x for _,x in sorted(zip(nonAccentedArtistList, artistList))]
 
 	for artist in artistList:
 		for album in os.listdir('/home/pi/Music/' + str(artist)):
@@ -88,19 +94,7 @@ with open('MusicItems.qml', 'w') as f:
 				playlist = list()
 				for song in os.listdir('/home/pi/Music/' + str(artist) + '/' + str(album)):
 					if str(song).endswith('.wma') or str(song).endswith('.wav') or str(song).endswith('.ogg') or str(song).endswith('.mp3'):
-
-						# Fix metadata to match our own, make sure we are not leaving blank fields
-						audio = mutagen.File('/home/pi/Music/{Artist}/{Album}/{Song}'.format(	Artist = str(artist),
-																								Album = str(album),
-																								Song = str(song)))
-						if audio is not None:
-							try:
-								audio['Title'] = str(song)[:-4]
-								audio['Author'] = str(artist)
-								audio.save()
-							except TypeError:
-								pass
-
+						print(song)
 						songlist.append(str(song))
 						playlist.append(songTemplate.format(	Artist = str(artist),
 																Album = str(album),
