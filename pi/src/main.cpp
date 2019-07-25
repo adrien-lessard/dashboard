@@ -5,6 +5,7 @@
 #include <QFontDatabase>
 
 #include "DashboardApplication.h"
+#include "Notification.h"
 #include "OBDIIWorker.h"
 #include "LocationWorker.h"
 
@@ -12,6 +13,7 @@ int main(int argc, char *argv[])
 {
 	OBDIIWorker* worker = new OBDIIWorker;
 	DashboardApplication* app = new DashboardApplication(worker, argc, argv);
+	Notification* notif = Notification::getInstance();
 
 	LocationWorker* locationner = new LocationWorker();
 
@@ -43,6 +45,7 @@ int main(int argc, char *argv[])
 	QObject::connect(worker, SIGNAL(checkErrorCodesDone(QVariant)), statusPage, SLOT(checkErrorCodesDone(QVariant)));
 	QObject::connect(worker, SIGNAL(clearErrorCodesDone(QVariant)), statusPage, SLOT(clearErrorCodesDone(QVariant)));
 	QObject::connect(worker, SIGNAL(updateOdo()), tripPage, SLOT(updateOdo()));
+	QObject::connect(notif, SIGNAL(notifyUI(QVariant)), topLevel, SLOT(notifyUI(QVariant)));
 	QObject::connect(locationner, SIGNAL(setNewCoo(QVariant, QVariant)), navPage, SLOT(setNewCoo(QVariant, QVariant)));
 
 	QObject::connect(app, &DashboardApplication::aboutToQuit, app, &DashboardApplication::killWorker);

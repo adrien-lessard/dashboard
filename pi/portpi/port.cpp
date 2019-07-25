@@ -1,5 +1,6 @@
 
 #include "port.h"
+#include "Notification.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -155,10 +156,14 @@ uint8_t serialRead()
 	uint8_t byte;
 	int ret = read(uartFd, &byte, 1);
 	
-	if(ret < 0)
+	if(ret < 0) {
 		printf("error %d reading serial: %s\n", errno, strerror(errno));
-	else if(ret == 0)
+		Notification::notify("Serial read error");
+	}
+	else if(ret == 0) {
 		printf("Serial timeout\n");
+		Notification::notify("Serial timeout");
+	}
 	if(ret != 1)
 		return 0;
 	else

@@ -5,6 +5,7 @@
 #include "MILCode.h"
 #include "PID.h"
 #include "port.h"
+#include "Notification.h"
 
 #include <QFile>
 #include <QFileInfo>
@@ -133,6 +134,9 @@ bool OBDIIWorker::getPid(PID pid, uint8_t* retbuf)
 	if(!isPidSupported(pid))
 	{
 		printf("PID %u not supported\n", pid);
+		char buf[64];
+		sprintf(buf, "PID %u not supported", pid);
+		Notification::notify(buf);
 		return false;
 	}
 
@@ -255,7 +259,8 @@ void OBDIIWorker::clearMILCodes()
 	ISO9141::write(cmd, sizeof(cmd));
 	delayMs(200);
 
-	printf("Cleared codes. Restart engine.\n");
+	printf("Cleared codes\n");
+	Notification::notify("Cleared codes");
 }
 
 void OBDIIWorker::setup()
@@ -289,6 +294,7 @@ void OBDIIWorker::setup()
 	if (!logFile->open(QIODevice::WriteOnly | QIODevice::Text))
 	{
 		printf("Cannot open log file\n");
+		Notification::notify("Cannot open log file");
 		return;
 	}
 
@@ -302,10 +308,14 @@ void OBDIIWorker::setup()
 		
 		printf("ISO9141 init...\n");
 		initResult = ISO9141::init();
-		if (initResult == 0)
-			printf("ISO9141 init success!\n");
-		else
-			printf("ISO9141 init failure!\n");
+		if (initResult == 0) {
+			printf("ISO9141 init success\n");
+			Notification::notify("ISO9141 init success");
+		}
+		else {
+			printf("ISO9141 init failure\n");
+			Notification::notify("ISO9141 init failure");
+		}
 
 		delayMs(1000);
 	} while (initResult != 0);

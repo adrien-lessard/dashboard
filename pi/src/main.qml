@@ -27,6 +27,10 @@ Window {
     minimumWidth: width
     visibility: Window.FullScreen
 
+    function notifyUI(text) {
+        notificationRectangle.notify(text)
+    }
+
     Shortcut {
         sequence: "Escape"
         onActivated: visibility = Window.Windowed
@@ -58,6 +62,41 @@ Window {
             duration: 500
             running: false
             easing.type: Easing.InCubic
+        }
+    }
+
+    Rectangle {
+        id: notificationRectangle
+	    width: 200
+	    height: 40
+	    x: 50
+	    y: 360
+	    z: 30
+	    radius: 20
+	    color: '#222222'
+        opacity: 0
+
+        function notify(text) {
+            opacity = 1
+            notificationText.text = text
+            notificationTimer.restart()
+        }
+
+	    Text {
+            id: notificationText
+	        anchors.fill: parent
+	        text: 'Allo'
+	        color: Theme.txColor
+	        verticalAlignment: Text.AlignVCenter
+	        horizontalAlignment: Text.AlignHCenter
+	    }
+
+        Timer {
+            id: notificationTimer
+            interval: 5000
+            running: false
+            repeat: false
+            onTriggered: notificationRectangle.opacity = 0
         }
     }
 

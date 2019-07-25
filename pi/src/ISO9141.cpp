@@ -9,6 +9,7 @@
 #include <stdio.h>
 
 #include "port.h"
+#include "Notification.h"
 
 #define USE_FAST_DELAYS
 
@@ -112,6 +113,7 @@ int ISO9141::init()
 	// send 0x33 at 5 bauds
 	// start bit
 	printf("Bit-banging 0x33...\n");
+	Notification::notify("Bit-banging 0x33...");
 	txPinLow();
 	delayMs(200);
 	// data
@@ -130,6 +132,7 @@ int ISO9141::init()
 
 	// switch now to 10400 bauds
 	printf("Serial ON\n");
+	Notification::notify("Serial ON");
 	serial_on();
 
 	// wait for 0x55 from the ECU (up to 300ms)
@@ -137,6 +140,7 @@ int ISO9141::init()
 	for (int i = 0; i < 3; i++)
 	{
 		printf("Reading response from ECU...\n");
+		Notification::notify("Reading ECU response");
 		b = serialRead0x55();
 		if (b != 0)
 			break;
@@ -144,6 +148,7 @@ int ISO9141::init()
 
 	if (b != 0x55) {
 		printf("Did not get 0x55 from ECU, got 0x%02X instead\n", b);
+		Notification::notify("ECU response error");
 		return -1;
 	}
 
@@ -162,6 +167,7 @@ int ISO9141::init()
 	b = serialRead0xCC();
 	if (b != 0xCC) {
 		printf("Did not get 0xCC from ECU, got 0x%02X instead\n", b);
+		Notification::notify("Keyword response error");
 		return -1;
 	}
 
