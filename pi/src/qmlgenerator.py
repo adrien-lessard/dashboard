@@ -1,6 +1,5 @@
 
 import os
-import mutagen
 import unidecode
 from PIL import Image
 

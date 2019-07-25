@@ -56,7 +56,6 @@ $ sudo apt autoremove
 $ sudo apt install matchbox-keyboard
 $ sudo apt install cmake
 $ sudo apt install libgl-dev
-$ sudo apt install python3-mutagen
 ```
 
 ## Faster boot and operation
