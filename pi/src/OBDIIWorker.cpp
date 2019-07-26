@@ -177,28 +177,63 @@ void OBDIIWorker::checkServices()
 		ISO9141::write(cmd, sizeof(cmd));
 		ISO9141::readRawPrint();
 	}
-	
+
+	{
+		printf("Service 0x01, PID 0x03: ");
+		uint8_t cmd[] = { 0x01, 0x03 };
+		ISO9141::write(cmd, sizeof(cmd));
+		ISO9141::readRawPrint();
+	}
+
+	{
+		printf("Service 0x01, PID 0x04: ");
+		uint8_t cmd[] = { 0x01, 0x04 };
+		ISO9141::write(cmd, sizeof(cmd));
+		ISO9141::readRawPrint();
+	}
+
+	{
+		printf("Service 0x01, PID 0x05: ");
+		uint8_t cmd[] = { 0x01, 0x05 };
+		ISO9141::write(cmd, sizeof(cmd));
+		ISO9141::readRawPrint();
+	}
+
+	{
+		printf("Service 0x01, PID 0x06: ");
+		uint8_t cmd[] = { 0x01, 0x06 };
+		ISO9141::write(cmd, sizeof(cmd));
+		ISO9141::readRawPrint();
+	}
+
+	{
+		printf("Service 0x01, PID 0x07: ");
+		uint8_t cmd[] = { 0x01, 0x07 };
+		ISO9141::write(cmd, sizeof(cmd));
+		ISO9141::readRawPrint();
+	}
+
 	{
 		printf("Service 0x02, PID 0x02, freeze frame 0: ");
 		uint8_t cmd[] = { 0x02, 0x02, 0x00 };
 		ISO9141::write(cmd, sizeof(cmd));
 		ISO9141::readRawPrint();
 	}
-	
+
 	{
 		printf("Service 0x03: ");
 		uint8_t cmd[] = { 0x03 };
 		ISO9141::write(cmd, sizeof(cmd));
 		ISO9141::readRawPrint();
 	}
-	
+
 	{
 		printf("Service 0x07: ");
 		uint8_t cmd[] = { 0x07 };
 		ISO9141::write(cmd, sizeof(cmd));
 		ISO9141::readRawPrint();
 	}
-	
+
 	{
 		printf("Service 0x0A: ");
 		uint8_t cmd[] = { 0x0A };
