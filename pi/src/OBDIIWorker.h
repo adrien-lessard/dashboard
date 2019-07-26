@@ -67,6 +67,7 @@ signals:
 public slots:
 	void handleCheckErrorCodes();
 	void handleClearErrorCodes();
+	void handleCheckOtherServices();
 
 private:
 	// PID raw values
@@ -94,6 +95,7 @@ private:
 	bool mustStop;
 	bool checkErrorCodes;
 	bool clearErrorCodes;
+	bool checkOtherServices;
 
 	// Internal resources
 	QFile* logFile;
@@ -111,4 +113,5 @@ private:
 	bool getPid(PID pid, uint8_t* retbuf);
 	QString checkMILCodes();
 	void clearMILCodes();
+	void checkServices();
 };

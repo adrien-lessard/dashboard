@@ -17,6 +17,9 @@ public:
 	// read n uint8_t of data (+ header + cmd and crc)
 	// return the result only in data
 	static int read(uint8_t *data, uint8_t len);
+	
+	// reads a whole result
+	static int readRawPrint();
 
 private:
 

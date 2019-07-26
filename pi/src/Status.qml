@@ -81,6 +81,17 @@ ScrollView {
                 }
             }
 
+            Button {
+                id: checkOtherServicesButton
+                text: qsTr("Check other services")
+                visible: true
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                onClicked: {
+                    checkOtherServices()
+                }
+            }
+
             Text {
                 id: errorCodeResponseText
                 color: Theme.txColor

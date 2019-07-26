@@ -14,6 +14,7 @@ Window {
 
     signal checkErrorCodes()
     signal clearErrorCodes()
+    signal checkOtherServices()
     signal checkForUpdates()
     signal killApplication()
 

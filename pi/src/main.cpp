@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
 	QQuickWindow* window = qobject_cast<QQuickWindow*>(topLevel);
 	QObject::connect(window, SIGNAL(checkErrorCodes()), worker, SLOT(handleCheckErrorCodes()));
 	QObject::connect(window, SIGNAL(clearErrorCodes()), worker, SLOT(handleClearErrorCodes()));
+	QObject::connect(window, SIGNAL(checkOtherServices()), worker, SLOT(handleCheckOtherServices()));
 	QObject::connect(window, SIGNAL(checkForUpdates()), app, SLOT(handleCheckForUpdates()));
 	QObject::connect(window, SIGNAL(killApplication()), app, SLOT(handleKillApplication()));
 	QObject::connect(worker, SIGNAL(checkErrorCodesDone(QVariant)), statusPage, SLOT(checkErrorCodesDone(QVariant)));

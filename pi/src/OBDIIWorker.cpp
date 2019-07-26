@@ -103,6 +103,7 @@ OBDIIWorker::OBDIIWorker()
 	mustStop = false;
 	checkErrorCodes = false;
 	clearErrorCodes = false;
+	checkOtherServices = false;
 }
 
 // return 0 if pid is not supported, 1 if it is.
@@ -164,6 +165,46 @@ void OBDIIWorker::checkSupportedPids()
 	if (isPidSupported(PID_SUPPORT40))
 		getPid(PID_SUPPORT40, (uint8_t*)&pid41to60_support);
 	pid41to60_support = __builtin_bswap32(pid41to60_support);
+}
+
+void OBDIIWorker::checkServices()
+{
+	int err;
+	
+	{
+		printf("Service 0x01, PID 0x00: ");
+		uint8_t cmd[] = { 0x01, 0x00 };
+		ISO9141::write(cmd, sizeof(cmd));
+		ISO9141::readRawPrint();
+	}
+	
+	{
+		printf("Service 0x02, PID 0x02, freeze frame 0: ");
+		uint8_t cmd[] = { 0x02, 0x02, 0x00 };
+		ISO9141::write(cmd, sizeof(cmd));
+		ISO9141::readRawPrint();
+	}
+	
+	{
+		printf("Service 0x03: ");
+		uint8_t cmd[] = { 0x03 };
+		ISO9141::write(cmd, sizeof(cmd));
+		ISO9141::readRawPrint();
+	}
+	
+	{
+		printf("Service 0x07: ");
+		uint8_t cmd[] = { 0x07 };
+		ISO9141::write(cmd, sizeof(cmd));
+		ISO9141::readRawPrint();
+	}
+	
+	{
+		printf("Service 0x0A: ");
+		uint8_t cmd[] = { 0x0A };
+		ISO9141::write(cmd, sizeof(cmd));
+		ISO9141::readRawPrint();
+	}
 }
 
 // might be incomplete
@@ -483,6 +524,11 @@ void OBDIIWorker::run()
 			clearErrorCodes = false;
 			emit clearErrorCodesDone("Cleared! Please restart engine");
 		}
+		
+		if(checkOtherServices) {
+			checkServices();
+			checkOtherServices = false;
+		}
 
 		// Poll these PIDs as frequently as possible
 		computeAndEmitPID(PID::ENGINE_RPM);
@@ -532,4 +578,9 @@ void OBDIIWorker::handleCheckErrorCodes()
 void OBDIIWorker::handleClearErrorCodes()
 {
 	clearErrorCodes = true;
+}
+
+void OBDIIWorker::handleCheckOtherServices()
+{
+	checkOtherServices = true;
 }
