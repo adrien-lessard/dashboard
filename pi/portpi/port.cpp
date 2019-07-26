@@ -151,23 +151,29 @@ uint8_t serialRead0xCC()
 	return serialRead();
 }
 
-uint8_t serialRead()
+uint8_t serialRead(int* err)
 {
 	uint8_t byte;
 	int ret = read(uartFd, &byte, 1);
 	
 	if(ret < 0) {
+		*err = 1;
 		printf("error %d reading serial: %s\n", errno, strerror(errno));
 		Notification::notify("Serial read error");
 	}
 	else if(ret == 0) {
+		*err = 2;
 		printf("Serial timeout\n");
 		Notification::notify("Serial timeout");
 	}
-	if(ret != 1)
+	if(ret != 1) {
+		*err = 3;
 		return 0;
-	else
+	}
+	else {
+		*err = 0;
 		return byte;
+	}
 }
 
 void serialWrite(uint8_t data)

@@ -70,19 +70,33 @@ int ISO9141::write(uint8_t *data, uint8_t len)
 	return 0;
 }
 
+int ISO9141::readRawPrint()
+{
+	int len = -1;
+	int err = 0;
+	do {
+		len ++;
+		uint8_t byte = serialRead(&err);
+		printf("%02X ", byte);
+	} while(err == 0);
+	printf("\n");
+	return len;
+}
+
 // read n uint8_t of data (+ header + cmd and crc)
 // return the result only in data
 int ISO9141::read(uint8_t *data, uint8_t len)
 {
 	uint8_t i;
 	uint8_t buf[20];
+	int err;
 
 	// header 3 bytes: [80+datalen] [destination=f1] [source=01]
 	// data 1+1+len bytes: [40+cmd0] [cmd1] [result0]
 	// checksum 1 bytes: [sum(header)+sum(data)]
 
 	for (i = 0; i < 3 + 1 + 1 + 1 + len; i++)
-		buf[i] = serialRead();
+		buf[i] = serialRead(&err);
 
 	// test, skip header comparison
 	// ignore failure for the moment (0x7f)
@@ -101,6 +115,7 @@ int ISO9141::init()
 {
 	uint8_t b;
 	uint8_t kw1, kw2;
+	int err;
 	serial_tx_off(); //disable UART so we can "bit-Bang" the slow init.
 	serial_rx_off();
 	delayMs(3000); //k line should be free of traffic for at least two secconds.
@@ -153,10 +168,10 @@ int ISO9141::init()
 	}
 
 	// wait for kw1 and kw2
-	kw1 = serialRead();
+	kw1 = serialRead(&err);
 	printf("kw1: 0x%02X\n", kw1);
 
-	kw2 = serialRead();
+	kw2 = serialRead(&err);
 	printf("kw2: 0x%02X\n", kw2);
 	delayMs(25); // TODO: nécessaire?
 

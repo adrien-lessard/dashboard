@@ -14,7 +14,7 @@ void txPinLow();
 void serial_rx_on();
 void serial_rx_off();
 void serial_tx_off();
-uint8_t serialRead();
+uint8_t serialRead(int* err);
 uint8_t serialRead0x55();
 uint8_t serialRead0xCC();
 void serialWrite(uint8_t data);

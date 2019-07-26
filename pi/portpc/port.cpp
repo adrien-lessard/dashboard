@@ -43,8 +43,9 @@ uint8_t serialRead0xCC()
 	return 0xCC;
 }
 
-uint8_t serialRead()
+uint8_t serialRead(int* err)
 {
+	*err = 0;
 	delayMs(10);
 	return rand() % 256;
 }
