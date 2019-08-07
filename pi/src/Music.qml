@@ -27,7 +27,7 @@ Item {
 
     Audio {
         id: playMusic
-        volume: volumeControl.text / 100
+        volume: (volumeControl.text / 100) * (0.9 + 0.25 * (applicationData.speed / 150) + 0.25 * (applicationData.rpm / 6000))
         playlist: Playlist { }
     }
 
