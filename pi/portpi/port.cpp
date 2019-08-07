@@ -143,12 +143,14 @@ void serial_tx_off()
 
 uint8_t serialRead0x55()
 {
-	return serialRead();
+	int err;
+	return serialRead(&err);
 }
 
 uint8_t serialRead0xCC()
 {
-	return serialRead();
+	int err;
+	return serialRead(&err);
 }
 
 uint8_t serialRead(int* err)
