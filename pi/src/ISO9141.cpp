@@ -94,8 +94,11 @@ int ISO9141::read(uint8_t *data, uint8_t len)
 	// data cmdlen+len bytes: [40+cmd0] {[cmd1] [cmd2] ...} [result]
 	// checksum 1 bytes: [sum(header)+sum(data)]
 
-	for (i = 0; i < 3 + 1 + len; i++)
+	for (i = 0; i < 3 + 1 + len; i++) {
 		buf[i] = serialRead(&err);
+		if(err)
+			break; // If there is a timeout, don't waste time, jump to next command
+	}
 
 	// test, skip header comparison
 	// ignore failure for the moment (0x7f)
