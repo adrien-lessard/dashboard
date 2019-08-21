@@ -83,27 +83,26 @@ int ISO9141::readRawPrint()
 	return len;
 }
 
-// read n uint8_t of data (+ header + cmd and crc)
-// return the result only in data
+// Read the command echo and the response
 int ISO9141::read(uint8_t *data, uint8_t len)
 {
 	uint8_t i;
 	uint8_t buf[20];
 	int err;
 
-	// header 3 bytes: [80+datalen] [destination=f1] [source=01]
-	// data 1+1+len bytes: [40+cmd0] [cmd1] [result0]
+	// header 3 bytes: [0x48] [destination=0x6B] [source=0x10]
+	// data cmdlen+len bytes: [40+cmd0] {[cmd1] [cmd2] ...} [result]
 	// checksum 1 bytes: [sum(header)+sum(data)]
 
-	for (i = 0; i < 3 + 1 + 1 + 1 + len; i++)
+	for (i = 0; i < 3 + 1 + len; i++)
 		buf[i] = serialRead(&err);
 
 	// test, skip header comparison
 	// ignore failure for the moment (0x7f)
 	// ignore crc for the moment
 
-	// we send only one command, so result start at buf[4] Actually, result starts at buf[5], buf[4] is pid requested...
-	memcpy(data, buf + 5, len);
+	// Command echo starts at offset 3, followed by response
+	memcpy(data, buf + 3, len);
 
 	delayMs(AFTER_READ_DELAY_MS);    // guarantee 55 ms pause between requests
 

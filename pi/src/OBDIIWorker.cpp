@@ -130,6 +130,7 @@ bool OBDIIWorker::isPidSupported(PID pid)
 bool OBDIIWorker::getPid(PID pid, uint8_t* retbuf)
 {
 	uint8_t cmd[2];
+	uint8_t tmpbuf[64];
 
 	// check if PID is supported (should not happen except for some 0xFn)
 	if(!isPidSupported(pid))
@@ -148,7 +149,8 @@ bool OBDIIWorker::getPid(PID pid, uint8_t* retbuf)
 	ISO9141::write(cmd, sizeof(cmd));
 
 	// read requested length, n bytes received in buf
-	ISO9141::read(retbuf, PIDResLens[pid]);
+	ISO9141::read(tmpbuf, sizeof(cmd) + PIDResLens[pid]);
+	memcpy(retbuf, tmpbuf + sizeof(cmd), PIDResLens[pid]);
 
 	return true;
 }
@@ -274,48 +276,39 @@ QString OBDIIWorker::checkMILCodes()
 		// retrieve code
 		cmd[0] = 0x03;
 		ISO9141::write(cmd, sizeof(cmd));
+		ISO9141::read(buf, sizeof(cmd) + 6 * ((nbMILCodes + 2) / 3)); // Each chunk of 6 bytes contain 3 codes
+		uint8_t* buf_ptr = buf;
+		buf_ptr++; // Discard the command echo
 
-		int readCodes = 0;
-		for (int i = 0; i < (nbMILCodes + 2) / 3; i++)  // each received packet contain 3 codes
+		for (int i = 0; i < nbMILCodes; i++)
 		{
-			ISO9141::read(buf, 6);
-			uint8_t* buf_ptr = buf;
-			
-			for (int j = 0; j < 3; j++)  // the 3 codes
+			MILCode m;
+
+			switch ((*buf_ptr & 0xC0) >> 6)
 			{
-				if(readCodes < nbMILCodes)
-				{
-					MILCode m;
-
-					switch ((*buf_ptr & 0xC0) >> 6)
-					{
-					case 0x00:
-						m.letter = 'P';  // powertrain
-						break;
-					case 0x01:
-						m.letter = 'C';  // chassis
-						break;
-					case 0x02:
-						m.letter = 'B';  // body
-						break;
-					case 0x03:
-						m.letter = 'U';  // network
-						break;
-					}
-
-					m.chars[0] = (*buf_ptr & 0x30) >> 4;
-					m.chars[1] = (*buf_ptr & 0x0F) >> 0;
-					buf_ptr++;
-					m.chars[2] = (*buf_ptr & 0xF0) >> 4;
-					m.chars[3] = (*buf_ptr & 0x0F) >> 0;
-					buf_ptr++;
-
-					m.print();
-					retText += m.toQString();
-
-					readCodes++;
-				}
+			case 0x00:
+				m.letter = 'P';  // powertrain
+				break;
+			case 0x01:
+				m.letter = 'C';  // chassis
+				break;
+			case 0x02:
+				m.letter = 'B';  // body
+				break;
+			case 0x03:
+				m.letter = 'U';  // network
+				break;
 			}
+
+			m.chars[0] = (*buf_ptr & 0x30) >> 4;
+			m.chars[1] = (*buf_ptr & 0x0F) >> 0;
+			buf_ptr++;
+			m.chars[2] = (*buf_ptr & 0xF0) >> 4;
+			m.chars[3] = (*buf_ptr & 0x0F) >> 0;
+			buf_ptr++;
+
+			m.print();
+			retText += m.toQString();
 		}
 	}
 	else
