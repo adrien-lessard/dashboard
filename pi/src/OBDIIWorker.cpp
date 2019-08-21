@@ -181,6 +181,13 @@ void OBDIIWorker::checkServices()
 	}
 
 	{
+		printf("Service 0x01, PID 0x01: ");
+		uint8_t cmd[] = { 0x01, 0x01 };
+		ISO9141::write(cmd, sizeof(cmd));
+		ISO9141::readRawPrint();
+	}
+
+	{
 		printf("Service 0x01, PID 0x03: ");
 		uint8_t cmd[] = { 0x01, 0x03 };
 		ISO9141::write(cmd, sizeof(cmd));
