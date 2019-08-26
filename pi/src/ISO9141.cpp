@@ -120,13 +120,9 @@ int ISO9141::init()
 	int err;
 	serial_tx_off(); //disable UART so we can "bit-Bang" the slow init.
 	serial_rx_off();
+	txPinHigh();
 	delayMs(3000); //k line should be free of traffic for at least two secconds.
 	
-	
-	// drive K line high for 300ms
-	txPinHigh();
-	delayMs(300);
-
 	// send 0x33 at 5 bauds
 	// start bit
 	printf("Bit-banging 0x33...\n");
