@@ -58,6 +58,14 @@ $ sudo apt install cmake
 $ sudo apt install libgl-dev
 ```
 
+## Disable PWM and HDMI audio
+
+This forces USB audio to be the default option and probably saves some power and reduces EMI.
+
+```console
+sudo cp config/alsa-blacklist.conf /etc/modprobe.d/
+```
+
 ## Faster boot and operation
 
 Edit /boot/config.txt, add
