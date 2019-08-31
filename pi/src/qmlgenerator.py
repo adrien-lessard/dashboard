@@ -34,6 +34,8 @@ templateStr = '''
                 text: "{Artist} - {Album}"
                 height: parent.height
                 color: Theme.txColor
+                font.pointSize: 14
+                font.bold: true
                 padding: 0, 0, 0, 10
                 verticalAlignment: Text.AlignVCenter
             }}

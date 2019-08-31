@@ -13,16 +13,19 @@ Item {
         function getTitle(str) {
             var l = str.toString().split('/')
             var len = l.length
-            return l[len-1]
+            var s = l[len-1]
+            return s.substring(0, s.length - 4)
         }
 
         color: Theme.txColor
+        font.pointSize: 14
+        font.bold: true
         text: getTitle(playMusic.playlist.currentItemSource)
         horizontalAlignment: Text.AlignHCenter
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        padding: 10
+        padding: 5
     }
 
     Audio {
@@ -35,12 +38,13 @@ Item {
         anchors.top: parent.top
         anchors.topMargin: 20
         height: 50
-        padding: 10
+        padding: 0
+        property int contentHeight: 50
 
         Item {
             id: pauseIcon
             width: 40
-            height: 30
+            height: parent.contentHeight
             visible: true
 
             Image {
@@ -49,17 +53,18 @@ Item {
                 source: "../img/pause.svg"
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: { playMusic.pause(); playIcon.visible = true; pauseIcon.visible = false; }
-                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: { playMusic.pause(); playIcon.visible = true; pauseIcon.visible = false; }
             }
         }
 
         Item {
             id: playIcon
             width: 40
-            height: 30
+            height: parent.contentHeight
             visible: false
         
             Image {
@@ -68,20 +73,28 @@ Item {
                 source: "../img/playFull.svg"
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: { playMusic.play(); playIcon.visible = false; pauseIcon.visible = true; }
-                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: { playMusic.play(); playIcon.visible = false; pauseIcon.visible = true; }
             }
         }
 
-        Text {
-            width: 20
-            color: Theme.txColor
-            font.pixelSize: 26
-            padding: -2
-            text: "<"
-            horizontalAlignment: Text.AlignHCenter
+        Item {
+            width: 50
+            height: parent.contentHeight
+
+            Text {
+                width: parent.width
+                color: Theme.txColor
+                font.pointSize: 24
+                font.bold: true
+                padding: 0
+                text: "<"
+                horizontalAlignment: Text.AlignHCenter
+            }
+
             MouseArea {
                 anchors.fill: parent
                 onClicked: { playMusic.playlist.previous(); }
@@ -89,7 +102,8 @@ Item {
         }
         
         Column {
-            padding:12
+            topPadding:22
+            bottomPadding:22
 
             ProgressBar {
                 width: 150
@@ -111,13 +125,20 @@ Item {
             }
         }
 
-        Text {
-            width: 20
-            color: Theme.txColor
-            font.pixelSize: 26
-            padding: -2
-            text: ">"
-            horizontalAlignment: Text.AlignHCenter
+        Item {
+            width: 50
+            height: parent.contentHeight
+
+            Text {
+                width: parent.width
+                color: Theme.txColor
+                font.pointSize: 24
+                font.bold: true
+                padding: 0
+                text: ">"
+                horizontalAlignment: Text.AlignHCenter
+            }
+
             MouseArea {
                 anchors.fill: parent
                 onClicked: { playMusic.playlist.next(); }
@@ -126,7 +147,7 @@ Item {
 
         Item {
             width: 50
-            height: 30
+            height: parent.contentHeight
         }
 
         Timer {
@@ -145,13 +166,20 @@ Item {
             onTriggered: volumeControl.decr()
         }
 
-        Text {
-            width: 40
-            color: Theme.txColor
-            font.pixelSize: 26
-            padding: -2
-            text: "-"
-            horizontalAlignment: Text.AlignHCenter
+        Item {
+            width: 50
+            height: parent.contentHeight
+
+            Text {
+                width: parent.width
+                color: Theme.txColor
+                font.pointSize: 24
+                font.bold: true
+                padding: 2
+                text: "–"
+                horizontalAlignment: Text.AlignHCenter
+            }
+
             MouseArea {
                 anchors.fill: parent
                 onClicked: { volumeControl.decr(); }
@@ -160,44 +188,57 @@ Item {
             }
         }
 
-        Text {
-            id: volumeControl
+        Item {
             width: 40
-            color: Theme.txColor
-            font.pixelSize: 26
-            padding: -2
-            text: volumeControlSettings.volume
-            horizontalAlignment: Text.AlignHCenter
+            height: parent.contentHeight
 
-            Settings {
-                id: volumeControlSettings
-                property string volume: "10"
-            }
+            Text {
+                id: volumeControl
+                width: parent.width
+                color: Theme.txColor
+                font.pointSize: 24
+                font.bold: true
+                padding: 2
+                text: volumeControlSettings.volume
+                horizontalAlignment: Text.AlignHCenter
 
-            function incr() {
-                var newVal = Number(volumeControl.text) + 1;
-                if(newVal <= 100) {
-                    volumeControl.text = newVal;
-                    volumeControlSettings.volume = newVal;
+                Settings {
+                    id: volumeControlSettings
+                    property string volume: "10"
                 }
-            }
 
-            function decr() {
-                var newVal = Number(volumeControl.text) - 1;
-                if(newVal >= 0) {
-                    volumeControl.text = newVal;
-                    volumeControlSettings.volume = newVal;
+                function incr() {
+                    var newVal = Number(volumeControl.text) + 1;
+                    if(newVal <= 100) {
+                        volumeControl.text = newVal;
+                        volumeControlSettings.volume = newVal;
+                    }
+                }
+
+                function decr() {
+                    var newVal = Number(volumeControl.text) - 1;
+                    if(newVal >= 0) {
+                        volumeControl.text = newVal;
+                        volumeControlSettings.volume = newVal;
+                    }
                 }
             }
         }
 
-        Text {
-            width: 40
-            color: Theme.txColor
-            font.pixelSize: 26
-            padding: -2
-            text: "+"
-            horizontalAlignment: Text.AlignHCenter
+        Item {
+            width: 50
+            height: parent.contentHeight
+
+            Text {
+                width: parent.width
+                color: Theme.txColor
+                font.pointSize: 24
+                font.bold: true
+                padding: 2
+                text: "+"
+                horizontalAlignment: Text.AlignHCenter
+            }
+
             MouseArea {
                 anchors.fill: parent
                 onClicked: { volumeControl.incr(); }
@@ -205,7 +246,6 @@ Item {
                 onReleased: { volumeControlIncrTimer.running = false; }
             }
         }
-        
     }
 
     ScrollView {

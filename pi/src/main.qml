@@ -199,7 +199,8 @@ Window {
             width: parent.width
             height: 40
             color: Theme.txColor
-            font.pixelSize: 24
+            font.pointSize: 24
+            font.bold: true
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
 
