@@ -66,6 +66,20 @@ This forces USB audio to be the default option and probably saves some power and
 sudo cp config/alsa-blacklist.conf /etc/modprobe.d/
 ```
 
+## Time keeping
+
+Ensure the time is set from the hardware clock at boot. Run crontab -e and add the following line:
+
+```console
+@reboot /home/pi/updateTime.sh
+```
+
+Copy the file to the right location:
+
+```console
+cp config/updateTime.sh /home/pi/
+```
+
 ## Faster boot and operation
 
 Edit /boot/config.txt, add
